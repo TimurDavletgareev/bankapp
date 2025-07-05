@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.NewUserDto;
@@ -13,6 +12,8 @@ import ru.yandex.practicum.dto.UserDto;
 import ru.yandex.practicum.entity.User;
 import ru.yandex.practicum.mapper.UserMapper;
 import ru.yandex.practicum.repository.UserRepository;
+
+import java.security.Principal;
 
 @Slf4j
 @Service
@@ -23,16 +24,11 @@ public class UserService implements UserDetailsService {
     private final RoleService roleService;
     private final UserMapper userMapper;
     private final AccountService accountService;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("loadUserByUsername '{}'", email);
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            log.warn("User not found by email '{}'", email);
-            return null;
-        }
+        User user = getUserByEmail(email);
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
@@ -42,16 +38,12 @@ public class UserService implements UserDetailsService {
         return userDetails;
     }
 
-    public UserDto getByUserId(Long userId) {
-        log.info("getByUserId '{}'", userId);
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            log.warn("User not found by id '{}'", userId);
-            return null;
-        }
+    public UserDto getCurrentUserDto(Principal principal) {
+        log.info("get current user");
+        User user = getCurrentUser(principal);
         UserDto userDto = userMapper.map(user);
-        userDto.setAccounts(accountService.getByUserId(userId));
-        log.info("UserDto returned: {}", userDto);
+        userDto.setAccounts(accountService.getByUserId(user.getId()));
+        log.info("current user: {}", userDto);
         return userDto;
     }
 
@@ -59,8 +51,10 @@ public class UserService implements UserDetailsService {
     public UserDto saveUser(NewUserDto newUserDto) {
         log.info("saveUser '{}'", newUserDto);
         if (newUserDto == null) {
-            log.warn("UserDto is null");
-            return null;
+            throw new IllegalArgumentException("UserDto is null");
+        }
+        if (isEmailExists(newUserDto.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
         }
         User user = userMapper.map(newUserDto);
         User savedUser = userRepository.save(user);
@@ -70,15 +64,35 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDto updateUser(UserDto userDto) {
+    public UserDto updateUser(UserDto userDto, Principal principal) {
         log.info("updateUser '{}'", userDto);
-        if (userDto == null || userDto.getId() == null) {
+        if (userDto == null) {
             log.warn("UpdateUserDto is null");
             return null;
         }
-        UserDto userToUpdate = getByUserId(userDto.getId());
+        UserDto userToUpdate = userMapper.map(getCurrentUser(principal));
         UserDto updatedUser = userMapper.update(userDto, userToUpdate);
         log.info("UserDto updated: {}", updatedUser);
         return updatedUser;
+    }
+
+    private User getCurrentUser(Principal principal) {
+        if (principal == null) {
+            throw new IllegalArgumentException("Principal cannot be null");
+        }
+        String email = principal.getName();
+        return getUserByEmail(email);
+    }
+
+    private User getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null || user.isDeleted()) {
+            throw new UsernameNotFoundException("Cannot find user by email: " + email);
+        }
+        return user;
+    }
+
+    private boolean isEmailExists(String email) {
+        return userRepository.findByEmail(email) != null;
     }
 }

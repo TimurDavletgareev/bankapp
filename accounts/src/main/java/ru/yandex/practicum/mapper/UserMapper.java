@@ -30,8 +30,6 @@ public class UserMapper {
         NullChecker.setIfNotNull(userDtoToUpdate::setFirstName, userDtoWithUpdates.getFirstName());
         NullChecker.setIfNotNull(userDtoToUpdate::setLastName, userDtoWithUpdates.getLastName());
         NullChecker.setIfNotNull(userDtoToUpdate::setBirthDate, userDtoWithUpdates.getBirthDate());
-        NullChecker.setIfNotNull(userDtoToUpdate::setPassword,
-                passwordEncoder.encode(userDtoWithUpdates.getPassword()));
         return userDtoToUpdate;
     }
 }

@@ -43,8 +43,34 @@ public class AccountService {
         Account account = new Account();
         account.setCurrency(currency);
         account.setBalance(0.0);
+        account.setDeleted(false);
         account = accountRepository.save(account);
         userAccountRepository.save(UserAccount.builder()
+                .userId(userId)
+                .accountId(account.getId())
+                .build());
+        log.info("account for userId={} saved: {}", userId, account);
+        return account;
+    }
+
+    @Transactional
+    public Account delete(Long userId) {
+        log.info("delete accounts for current userId={}", userId);
+        List<Account> accounts = getByUserId(userId);
+        boolean isEmptyBalances = accounts.stream()
+                .filter(account -> !account.getBalance().isNaN())
+                .toList()
+                .isEmpty();
+        if (!isEmptyBalances) {
+            throw new IncorrectRequestException("Some current user accounts are not empty");
+        }
+        boolean isAllDeleted = accountRepository.deleteAccountsByIdIn(accounts.stream()
+                .map(Account::getId)
+                .toList());
+
+
+
+                        .userAccountRepository.save(UserAccount.builder()
                 .userId(userId)
                 .accountId(account.getId())
                 .build());

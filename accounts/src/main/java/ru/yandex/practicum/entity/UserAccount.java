@@ -23,4 +23,7 @@ public class UserAccount {
     @Column
     @NonNull
     private Long accountId;
+
+    @Column
+    boolean isDeleted;
 }

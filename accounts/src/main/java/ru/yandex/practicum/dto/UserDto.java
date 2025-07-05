@@ -9,8 +9,6 @@ import java.util.List;
 @Data
 public class UserDto {
 
-    private Long id;
-
     private String email;
 
     private String firstName;
@@ -18,8 +16,6 @@ public class UserDto {
     private String lastName;
 
     private LocalDate birthDate;
-
-    private String password;
 
     private List<Account> accounts;
 }

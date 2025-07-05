@@ -22,4 +22,7 @@ public class Account {
     @Column
     @NonNull
     private String currency;
+
+    @Column
+    private boolean isDeleted;
 }

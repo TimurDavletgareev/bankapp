@@ -37,4 +37,7 @@ public class User {
     @JsonIgnore
     @ToString.Exclude
     private String password;
+
+    @Column
+    private boolean isDeleted;
 }
