@@ -6,12 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.AccountDto;
 import ru.yandex.practicum.entity.Account;
+import ru.yandex.practicum.entity.Currency;
 import ru.yandex.practicum.entity.UserAccount;
 import ru.yandex.practicum.error.exception.IncorrectRequestException;
 import ru.yandex.practicum.mapper.AccountMapper;
 import ru.yandex.practicum.repository.AccountRepository;
 import ru.yandex.practicum.repository.UserAccountRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -34,14 +36,22 @@ public class AccountService {
     @Transactional
     public AccountDto save(Long userId, String currency) {
         log.info("save account for userId={}, currency={}", userId, currency);
-        boolean isValidCurrency = getByUserId(userId).stream()
+        boolean isValidCurrency =
+                Arrays.stream(Currency.values())
+                        .map(existedCurrency -> existedCurrency.toString().toUpperCase())
+                        .toList()
+                        .contains(currency.toUpperCase());
+        if (!isValidCurrency) {
+            throw new IncorrectRequestException("Invalid currency");
+        }
+        boolean isNewCurrency = getByUserId(userId).stream()
                 .filter(account ->
                         currency.equalsIgnoreCase(account.getCurrency())
                                 && !account.isDeleted()
                 )
                 .toList()
                 .isEmpty();
-        if (!isValidCurrency) {
+        if (!isNewCurrency) {
             throw new IncorrectRequestException("Currency already exists in user accounts");
         }
         Account account = new Account();
@@ -108,11 +118,11 @@ public class AccountService {
         accountRepository.save(account);
         List<UserAccount> userAccounts = userAccountRepository.findByUserId(userId);
         userAccounts.forEach(userAccount -> {
-                   if (userAccount.getAccountId().equals(accountId)) {
-                       userAccount.setDeleted(true);
-                       userAccountRepository.save(userAccount);
-                   }
-                });
+            if (userAccount.getAccountId().equals(accountId)) {
+                userAccount.setDeleted(true);
+                userAccountRepository.save(userAccount);
+            }
+        });
         log.info("account with id={} deleted", accountId);
         return true;
     }
