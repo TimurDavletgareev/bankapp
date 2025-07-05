@@ -7,7 +7,6 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Table(name = "users")
 @Getter
@@ -38,6 +37,4 @@ public class User {
     @JsonIgnore
     @ToString.Exclude
     private String password;
-
-    private List<Account> accounts;
 }
