@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 @Getter
 @Setter
 @ToString
+@Builder
 public class UserAccount {
 
     @Id

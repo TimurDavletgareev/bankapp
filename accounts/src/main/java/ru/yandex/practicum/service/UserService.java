@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.UserDto;
 import ru.yandex.practicum.entity.User;
@@ -54,6 +55,7 @@ public class UserService implements UserDetailsService {
         return userDto;
     }
 
+    @Transactional
     public UserDto saveUser(NewUserDto newUserDto) {
         log.info("saveUser '{}'", newUserDto);
         if (newUserDto == null) {
@@ -61,10 +63,22 @@ public class UserService implements UserDetailsService {
             return null;
         }
         User user = userMapper.map(newUserDto);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         UserDto userDtoToReturn = userMapper.map(savedUser);
         log.info("UserDto saved: {}", userDtoToReturn);
         return userDtoToReturn;
+    }
+
+    @Transactional
+    public UserDto updateUser(UserDto userDto) {
+        log.info("updateUser '{}'", userDto);
+        if (userDto == null || userDto.getId() == null) {
+            log.warn("UpdateUserDto is null");
+            return null;
+        }
+        UserDto userToUpdate = getByUserId(userDto.getId());
+        UserDto updatedUser = userMapper.update(userDto, userToUpdate);
+        log.info("UserDto updated: {}", updatedUser);
+        return updatedUser;
     }
 }

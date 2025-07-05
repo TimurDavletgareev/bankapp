@@ -3,13 +3,14 @@ package ru.yandex.practicum.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.entity.Account;
+import ru.yandex.practicum.entity.UserAccount;
+import ru.yandex.practicum.error.exception.IncorrectRequestException;
 import ru.yandex.practicum.repository.AccountRepository;
 import ru.yandex.practicum.repository.UserAccountRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -21,14 +22,33 @@ public class AccountService {
 
     public List<Account> getByUserId(long userId) {
         log.info("getAccountsByUserId {}", userId);
-        List<Account> listToReturn = new ArrayList<>();
-        userAccountRepository.findByUserId(userId)
-                .forEach(userAccount -> {
-                    Long accountId = userAccount.getAccountId();
-                    Optional<Account> account = accountRepository.findById(accountId);
-                    account.ifPresent(listToReturn::add);
-                });
+        List<Long> accountIds = userAccountRepository.findByUserId(userId).stream()
+                .map(UserAccount::getAccountId)
+                .toList();
+        List<Account> listToReturn = accountRepository.findByIdIn(accountIds);
         log.info("AccountsByUserId returned, list size={}", listToReturn.size());
         return listToReturn;
+    }
+
+    @Transactional
+    public Account save(Long userId, String currency) {
+        log.info("save account for userId={}, currency={}", userId, currency);
+        boolean isValidCurrency = getByUserId(userId).stream()
+                .filter(account -> currency.equalsIgnoreCase(account.getCurrency()))
+                .toList()
+                .isEmpty();
+        if (!isValidCurrency) {
+            throw new IncorrectRequestException("Currency already exists in user accounts");
+        }
+        Account account = new Account();
+        account.setCurrency(currency);
+        account.setBalance(0.0);
+        account = accountRepository.save(account);
+        userAccountRepository.save(UserAccount.builder()
+                .userId(userId)
+                .accountId(account.getId())
+                .build());
+        log.info("account for userId={} saved: {}", userId, account);
+        return account;
     }
 }
