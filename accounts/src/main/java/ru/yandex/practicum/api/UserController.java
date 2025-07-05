@@ -3,10 +3,7 @@ package ru.yandex.practicum.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.UserDto;
 import ru.yandex.practicum.service.UserService;
@@ -34,5 +31,15 @@ public class UserController {
     @PostMapping("/update")
     public UserDto updateUser(@RequestBody UserDto UserDto, Principal principal) {
         return userService.updateUser(UserDto, principal);
+    }
+
+    @PostMapping("/update-password")
+    public boolean updateUser(@RequestBody String password, Principal principal) {
+        return userService.updatePassword(password, principal);
+    }
+
+    @DeleteMapping("/delete")
+    public boolean deleteUser(Principal principal) {
+        return userService.deleteUser(principal);
     }
 }

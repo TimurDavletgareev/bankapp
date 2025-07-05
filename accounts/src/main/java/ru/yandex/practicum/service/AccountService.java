@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.dto.AccountDto;
 import ru.yandex.practicum.entity.Account;
 import ru.yandex.practicum.entity.UserAccount;
 import ru.yandex.practicum.error.exception.IncorrectRequestException;
+import ru.yandex.practicum.mapper.AccountMapper;
 import ru.yandex.practicum.repository.AccountRepository;
 import ru.yandex.practicum.repository.UserAccountRepository;
 
@@ -19,22 +21,24 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final UserAccountRepository userAccountRepository;
+    private final AccountMapper accountMapper;
 
     public List<Account> getByUserId(long userId) {
         log.info("getAccountsByUserId {}", userId);
-        List<Long> accountIds = userAccountRepository.findByUserId(userId).stream()
-                .map(UserAccount::getAccountId)
-                .toList();
+        List<Long> accountIds = getAccountIdsByUserId(userId);
         List<Account> listToReturn = accountRepository.findByIdIn(accountIds);
         log.info("AccountsByUserId returned, list size={}", listToReturn.size());
         return listToReturn;
     }
 
     @Transactional
-    public Account save(Long userId, String currency) {
+    public AccountDto save(Long userId, String currency) {
         log.info("save account for userId={}, currency={}", userId, currency);
         boolean isValidCurrency = getByUserId(userId).stream()
-                .filter(account -> currency.equalsIgnoreCase(account.getCurrency()))
+                .filter(account ->
+                        currency.equalsIgnoreCase(account.getCurrency())
+                                && !account.isDeleted()
+                )
                 .toList()
                 .isEmpty();
         if (!isValidCurrency) {
@@ -50,12 +54,31 @@ public class AccountService {
                 .accountId(account.getId())
                 .build());
         log.info("account for userId={} saved: {}", userId, account);
-        return account;
+        return accountMapper.map(account);
     }
 
     @Transactional
-    public Account delete(Long userId) {
-        log.info("delete accounts for current userId={}", userId);
+    public Double updateBalance(Long userId, Long accountId, Double amount) {
+        log.info("update account balance for userId={}, accountId={}, amount={}", userId, accountId, amount);
+        List<Long> accountIds = getAccountIdsByUserId(userId);
+        if (!accountIds.contains(accountId)) {
+            throw new IncorrectRequestException("Account id is not exists in user accounts");
+        }
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new IncorrectRequestException("Account id not found"));
+        double newBalance = account.getBalance() + amount;
+        if (newBalance < 0) {
+            throw new IncorrectRequestException("Not enough balance");
+        }
+        account.setBalance(account.getBalance() + amount);
+        accountRepository.save(account);
+        log.info("Successfully updated account balance for userId={}, accountId={}, amount={}", userId, accountId, amount);
+        return newBalance;
+    }
+
+    @Transactional
+    public void deleteAllByUserId(Long userId) {
+        log.info("delete all accounts for current userId={}", userId);
         List<Account> accounts = getByUserId(userId);
         boolean isEmptyBalances = accounts.stream()
                 .filter(account -> !account.getBalance().isNaN())
@@ -64,17 +87,40 @@ public class AccountService {
         if (!isEmptyBalances) {
             throw new IncorrectRequestException("Some current user accounts are not empty");
         }
-        boolean isAllDeleted = accountRepository.deleteAccountsByIdIn(accounts.stream()
-                .map(Account::getId)
-                .toList());
+        accounts.forEach(account -> account.setDeleted(true));
+        accountRepository.saveAll(accounts);
+        List<UserAccount> userAccounts = userAccountRepository.findByUserId(userId);
+        userAccounts.forEach(userAccount -> userAccount.setDeleted(true));
+        userAccountRepository.saveAll(userAccounts);
+        log.info("All accounts for userId={} deleted", userId);
+    }
 
+    @Transactional
+    public boolean deleteByAccountId(Long userId, Long accountId) {
+        log.info("delete account by id={}", accountId);
+        List<Long> accountIds = getAccountIdsByUserId(userId);
+        if (!accountIds.contains(accountId)) {
+            throw new IncorrectRequestException("Account id is not exists in user accounts");
+        }
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new IncorrectRequestException("Account id not found"));
+        account.setDeleted(true);
+        accountRepository.save(account);
+        List<UserAccount> userAccounts = userAccountRepository.findByUserId(userId);
+        userAccounts.forEach(userAccount -> {
+                   if (userAccount.getAccountId().equals(accountId)) {
+                       userAccount.setDeleted(true);
+                       userAccountRepository.save(userAccount);
+                   }
+                });
+        log.info("account with id={} deleted", accountId);
+        return true;
+    }
 
-
-                        .userAccountRepository.save(UserAccount.builder()
-                .userId(userId)
-                .accountId(account.getId())
-                .build());
-        log.info("account for userId={} saved: {}", userId, account);
-        return account;
+    private List<Long> getAccountIdsByUserId(Long userId) {
+        return userAccountRepository.findByUserId(userId).stream()
+                .filter(userAccount -> !userAccount.isDeleted())
+                .map(UserAccount::getAccountId)
+                .toList();
     }
 }

@@ -57,6 +57,7 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("Email already exists");
         }
         User user = userMapper.map(newUserDto);
+        user.setDeleted(false);
         User savedUser = userRepository.save(user);
         UserDto userDtoToReturn = userMapper.map(savedUser);
         log.info("UserDto saved: {}", userDtoToReturn);
@@ -74,6 +75,27 @@ public class UserService implements UserDetailsService {
         UserDto updatedUser = userMapper.update(userDto, userToUpdate);
         log.info("UserDto updated: {}", updatedUser);
         return updatedUser;
+    }
+
+    @Transactional
+    public boolean updatePassword(String password, Principal principal) {
+        log.info("updatePassword");
+        User user = getCurrentUser(principal);
+        user.setPassword(userMapper.mapPassword(password));
+        userRepository.save(user);
+        log.info("Password updated");
+        return true;
+    }
+
+    @Transactional
+    public boolean deleteUser(Principal principal) {
+        log.info("deleteUser");
+        User user = getCurrentUser(principal);
+        user.setDeleted(true);
+        userRepository.save(user);
+        accountService.deleteAllByUserId(user.getId());
+        log.info("user deleted");
+        return true;
     }
 
     private User getCurrentUser(Principal principal) {

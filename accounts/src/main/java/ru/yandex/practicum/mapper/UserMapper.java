@@ -32,4 +32,8 @@ public class UserMapper {
         NullChecker.setIfNotNull(userDtoToUpdate::setBirthDate, userDtoWithUpdates.getBirthDate());
         return userDtoToUpdate;
     }
+
+    public String mapPassword(String password) {
+        return passwordEncoder.encode(password);
+    }
 }
