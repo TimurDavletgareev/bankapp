@@ -17,6 +17,11 @@ import java.security.Principal;
 public class AccountServiceController {
 
     private final UserClient userClient;
+
+    @GetMapping
+    public String getCurrentUser(Principal principal) {
+        return "Current user email: " + principal.getName();
+    }
 /*
     @GetMapping
     public UserDto getCurrentUser(Principal principal) {

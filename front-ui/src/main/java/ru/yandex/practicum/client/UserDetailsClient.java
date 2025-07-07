@@ -20,7 +20,7 @@ public class UserDetailsClient implements UserDetailsService {
     @Value("${spring.security.oauth2.client.registration.bankapp-front.client-id}")
     private String client_id;
 
-    @Value("${resource.server}")
+    @Value("${resource.server.accounts}")
     private String resource;
 
     private final OAuth2AuthorizedClientManager authorizedClientManager;
@@ -42,8 +42,9 @@ public class UserDetailsClient implements UserDetailsService {
         return restTemplate.getForObject(endpoint, UserDetails.class, username);*/
 
         RestClient restClient = RestClient.create(resource);
+        String endpoint = resource + "/user-details?email=" + username;
         return restClient.get()
-                .uri("/user-details/{email}", username)
+                .uri(endpoint)
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .body(UserDetails.class);

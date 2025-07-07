@@ -22,4 +22,5 @@ spring:
             clientAuthenticationMethod: client_secret_post
 
 resource:
-  server: accounts
+  server:
+    accounts: ${ACCOUNTS_SERVER_URL}

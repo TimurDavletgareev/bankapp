@@ -22,6 +22,5 @@ public class Role {
     private Long userId;
 
     @Column
-    @NonNull
     private String roleName;
 }

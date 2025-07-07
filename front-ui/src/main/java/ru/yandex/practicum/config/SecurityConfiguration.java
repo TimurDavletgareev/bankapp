@@ -22,7 +22,14 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(requests -> requests
                         .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true) // Удаление сессии при выходе
+                        .deleteCookies("JSESSIONID") // Удаление куки сессии
+                )
                 .build();
     }
 

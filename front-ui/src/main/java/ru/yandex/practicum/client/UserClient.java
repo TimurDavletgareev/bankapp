@@ -20,7 +20,7 @@ public class UserClient {
 
     private final OAuth2AuthorizedClientManager authorizedClientManager;
 
-    @Value("${resource.server}")
+    @Value("${resource.server.accounts}")
     private String resource;
 
     public Object getAccounts() {
