@@ -1,7 +1,6 @@
 package ru.yandex.practicum.dto;
 
 import lombok.Data;
-import ru.yandex.practicum.entity.Account;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,5 +18,5 @@ public class UserDto {
 
     private LocalDate birthDate;
 
-    private List<Account> accounts;
+    private List<AccountDto> accounts;
 }

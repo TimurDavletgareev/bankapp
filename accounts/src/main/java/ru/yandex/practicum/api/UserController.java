@@ -8,8 +8,6 @@ import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.UserDto;
 import ru.yandex.practicum.service.UserService;
 
-import java.security.Principal;
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -18,28 +16,25 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping
-    public UserDto getCurrentUser(Principal principal) {
-        return userService.getCurrentUserDto(principal);
-    }
-
     @PostMapping("/save")
     public UserDto addUser(@RequestBody NewUserDto newUserDto) {
         return userService.saveUser(newUserDto);
     }
 
-    @PostMapping("/update")
-    public UserDto updateUser(@RequestBody UserDto UserDto, Principal principal) {
-        return userService.updateUser(UserDto, principal);
+    @PostMapping("/update/{userId}")
+    public UserDto updateUser(@RequestBody UserDto UserDto,
+                              @PathVariable Long userId) {
+        return userService.updateUser(UserDto, userId);
     }
 
-    @PostMapping("/update-password")
-    public boolean updateUser(@RequestBody String password, Principal principal) {
-        return userService.updatePassword(password, principal);
+    @PostMapping("/update-password/{userId}")
+    public boolean updateUser(@RequestBody String password,
+                              @PathVariable Long userId) {
+        return userService.updatePassword(password, userId);
     }
 
-    @DeleteMapping("/delete")
-    public boolean deleteUser(Principal principal) {
-        return userService.deleteUser(principal);
+    @DeleteMapping("/delete/{userId}")
+    public boolean deleteUser(@PathVariable Long userId) {
+        return userService.deleteUser(userId);
     }
 }

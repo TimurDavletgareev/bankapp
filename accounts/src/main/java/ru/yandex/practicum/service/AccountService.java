@@ -25,12 +25,13 @@ public class AccountService {
     private final UserAccountRepository userAccountRepository;
     private final AccountMapper accountMapper;
 
-    public List<Account> getByUserId(long userId) {
+    public List<AccountDto> getByUserId(long userId) {
         log.info("getAccountsByUserId {}", userId);
-        List<Long> accountIds = getAccountIdsByUserId(userId);
-        List<Account> listToReturn = accountRepository.findByIdIn(accountIds);
+        List<Account> listToReturn = getAccountsByUserId(userId);
         log.info("AccountsByUserId returned, list size={}", listToReturn.size());
-        return listToReturn;
+        return listToReturn.stream()
+                .map(accountMapper::map)
+                .toList();
     }
 
     @Transactional
@@ -44,7 +45,7 @@ public class AccountService {
         if (!isValidCurrency) {
             throw new IncorrectRequestException("Invalid currency");
         }
-        boolean isNewCurrency = getByUserId(userId).stream()
+        boolean isNewCurrency = getAccountsByUserId(userId).stream()
                 .filter(account ->
                         currency.equalsIgnoreCase(account.getCurrency())
                                 && !account.isDeleted()
@@ -89,7 +90,7 @@ public class AccountService {
     @Transactional
     public void deleteAllByUserId(Long userId) {
         log.info("delete all accounts for current userId={}", userId);
-        List<Account> accounts = getByUserId(userId);
+        List<Account> accounts = getAccountsByUserId(userId);
         boolean isEmptyBalances = accounts.stream()
                 .filter(account -> !account.getBalance().isNaN())
                 .toList()
@@ -125,6 +126,11 @@ public class AccountService {
         });
         log.info("account with id={} deleted", accountId);
         return true;
+    }
+
+    private List<Account> getAccountsByUserId(long userId) {
+        List<Long> accountIds = getAccountIdsByUserId(userId);
+        return accountRepository.findByIdIn(accountIds);
     }
 
     private List<Long> getAccountIdsByUserId(Long userId) {

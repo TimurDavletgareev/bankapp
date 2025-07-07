@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.AccountDto;
 import ru.yandex.practicum.service.AccountService;
-import ru.yandex.practicum.service.UserService;
 
 import java.security.Principal;
 
@@ -17,27 +16,23 @@ import java.security.Principal;
 public class AccountController {
 
     private final AccountService accountService;
-    private final UserService userService;
 
-    @PostMapping("/save")
-    public AccountDto addAccount(@RequestBody String currency, Principal principal) {
-        return accountService.save(getCurrentUserId(principal), currency);
+    @PostMapping("/save/{userId}")
+    public AccountDto addAccount(@RequestBody String currency,
+                                 @PathVariable Long userId) {
+        return accountService.save(userId, currency);
     }
 
-    @PostMapping("/update/{accountId}")
-    public Double updateBalance(@PathVariable Long accountId,
-                                @RequestBody Double amount,
-                                Principal principal) {
-        return accountService.updateBalance(getCurrentUserId(principal), accountId, amount);
+    @PostMapping("/update/{userId}/{accountId}")
+    public Double updateBalance(@PathVariable Long userId,
+                                @PathVariable Long accountId,
+                                @RequestBody Double amount) {
+        return accountService.updateBalance(userId, accountId, amount);
     }
 
-    @DeleteMapping("/delete/{accountId}")
-    public boolean deleteAccount(@PathVariable Long accountId,
-                                 Principal principal) {
-        return accountService.deleteByAccountId(getCurrentUserId(principal), accountId);
-    }
-
-    private Long getCurrentUserId(Principal principal) {
-        return userService.getCurrentUserDto(principal).getId();
+    @DeleteMapping("/delete/{userId}/{accountId}")
+    public boolean deleteAccount(@PathVariable Long userId,
+                                 @PathVariable Long accountId) {
+        return accountService.deleteByAccountId(userId, accountId);
     }
 }
