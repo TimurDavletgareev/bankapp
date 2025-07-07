@@ -8,6 +8,8 @@ import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.UserDto;
 import ru.yandex.practicum.service.UserService;
 
+import java.security.Principal;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -15,6 +17,11 @@ import ru.yandex.practicum.service.UserService;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/{userId}")
+    public UserDto getUserById(@PathVariable Long userId) {
+        return userService.getUserDtoById(userId);
+    }
 
     @PostMapping("/save")
     public UserDto addUser(@RequestBody NewUserDto newUserDto) {

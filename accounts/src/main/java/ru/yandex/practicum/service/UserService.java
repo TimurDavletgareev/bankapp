@@ -12,6 +12,8 @@ import ru.yandex.practicum.error.exception.NotFoundException;
 import ru.yandex.practicum.mapper.UserMapper;
 import ru.yandex.practicum.repository.UserRepository;
 
+import java.security.Principal;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,15 @@ public class UserService {
         );
         log.info("UserDetails returned: {}", userDetails);
         return userDetails;
+    }
+
+    public UserDto getUserDtoById(Long userId) {
+        log.info("get current user");
+        User user = getUserById(userId);
+        UserDto userDto = userMapper.map(user);
+        userDto.setAccounts(accountService.getByUserId(user.getId()));
+        log.info("current user: {}", userDto);
+        return userDto;
     }
 
     @Transactional
