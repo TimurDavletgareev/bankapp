@@ -3,6 +3,7 @@ package ru.yandex.practicum.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.NewUserDto;
@@ -11,8 +12,6 @@ import ru.yandex.practicum.entity.User;
 import ru.yandex.practicum.error.exception.NotFoundException;
 import ru.yandex.practicum.mapper.UserMapper;
 import ru.yandex.practicum.repository.UserRepository;
-
-import java.security.Principal;
 
 @Slf4j
 @Service
@@ -24,12 +23,15 @@ public class UserService {
     private final UserMapper userMapper;
     private final AccountService accountService;
 
-    public UserDetails loadUserByUsername(String email) {
-        log.info("loadUserByUsername '{}'", email);
-        User user = getUserByEmail(email);
+    private final PasswordEncoder passwordEncoder; //TODO: for test only
+
+    public UserDetails loadUserByUsername(String userName) {
+        log.info("loadUserByUsername '{}'", userName);
+        User user = getUserByEmail(userName);
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
-                user.getPassword(),
+                //кодируем, т.к. пользователь создаётся в бд на старте
+                passwordEncoder.encode((user.getPassword())), //TODO: for test only
                 roleService.getRoles(user.getId())
         );
         log.info("UserDetails returned: {}", userDetails);

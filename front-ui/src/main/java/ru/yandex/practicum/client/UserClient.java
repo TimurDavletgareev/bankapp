@@ -20,6 +20,9 @@ public class UserClient {
 
     private final OAuth2AuthorizedClientManager authorizedClientManager;
 
+    @Value("${resource.server}")
+    private String resource;
+
     public Object getAccounts() {
 
         OAuth2AuthorizedClient client = authorizedClientManager.authorize(OAuth2AuthorizeRequest
@@ -28,6 +31,7 @@ public class UserClient {
                 .build()
         );
 
+        assert client != null;
         String accessToken = client.getAccessToken().getTokenValue();
 
         RestClient restClient = RestClient.create("http://localhost:8010");

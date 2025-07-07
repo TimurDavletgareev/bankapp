@@ -8,8 +8,6 @@ import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.UserDto;
 import ru.yandex.practicum.service.UserService;
 
-import java.security.Principal;
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/user")
