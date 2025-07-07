@@ -12,7 +12,7 @@ import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/user/account")
+@RequestMapping("/user/accounts")
 @Slf4j
 public class AccountController {
 

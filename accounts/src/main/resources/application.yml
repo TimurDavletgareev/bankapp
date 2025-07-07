@@ -3,7 +3,12 @@ server:
 
 spring:
   application:
-    name: bank-app-accounts
+    name: bankapp-accounts
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER_URI}
 
   datasource:
     url: jdbc:h2:mem:test
