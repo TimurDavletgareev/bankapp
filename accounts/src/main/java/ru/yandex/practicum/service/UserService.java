@@ -2,11 +2,11 @@ package ru.yandex.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.NewUserDto;
+import ru.yandex.practicum.dto.UserDetailsDto;
 import ru.yandex.practicum.dto.UserDto;
 import ru.yandex.practicum.entity.User;
 import ru.yandex.practicum.error.exception.NotFoundException;
@@ -25,10 +25,10 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder; //TODO: for test only
 
-    public UserDetails loadUserByUsername(String userName) {
+    public UserDetailsDto loadUserByUsername(String userName) {
         log.info("loadUserByUsername '{}'", userName);
         User user = getUserByEmail(userName);
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+        UserDetailsDto userDetails = new UserDetailsDto(
                 user.getEmail(),
                 //кодируем, т.к. пользователь создаётся в бд на старте
                 passwordEncoder.encode((user.getPassword())), //TODO: for test only

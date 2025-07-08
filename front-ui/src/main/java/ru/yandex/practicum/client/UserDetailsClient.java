@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import ru.yandex.practicum.dto.UserDetailsDto;
 
 @Service
 @Slf4j
@@ -27,26 +28,26 @@ public class UserDetailsClient implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info("loadUserByUsername {}", username);
         OAuth2AuthorizedClient client = authorizedClientManager.authorize(OAuth2AuthorizeRequest
                 .withClientRegistrationId(client_id)
                 .principal("system")
                 .build()
         );
-
         assert client != null;
         String accessToken = client.getAccessToken().getTokenValue();
-        /*RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-        String endpoint = resource + "/users/?email=" + username;
-        return restTemplate.getForObject(endpoint, UserDetails.class, username);*/
-
         RestClient restClient = RestClient.create(resource);
         String endpoint = resource + "/user-details?email=" + username;
-        return restClient.get()
+        UserDetailsDto userDetailsDto = restClient.get()
                 .uri(endpoint)
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
-                .body(UserDetails.class);
+                .body(UserDetailsDto.class);
+        assert userDetailsDto != null;
+        log.info("userDetailsDto {}", userDetailsDto);
+        return new org.springframework.security.core.userdetails.User(
+                userDetailsDto.getUsername(),
+                userDetailsDto.getPassword(),
+                userDetailsDto.getAuthorities());
     }
 }
