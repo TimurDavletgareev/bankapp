@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.ClientService;
+import ru.yandex.practicum.service.AccountClientService;
 import ru.yandex.practicum.dto.UserDetailsDto;
 
 @Service
@@ -14,13 +14,13 @@ import ru.yandex.practicum.dto.UserDetailsDto;
 @RequiredArgsConstructor
 public class UserDetailsClient implements UserDetailsService {
 
-    private final ClientService clientService;
+    private final AccountClientService accountClientService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("loadUserByUsername {}", username);
         String endpoint = "/user-details?email=" + username;
-        UserDetailsDto userDetailsDto = clientService.get(endpoint, UserDetailsDto.class);
+        UserDetailsDto userDetailsDto = accountClientService.get(endpoint, UserDetailsDto.class);
         assert userDetailsDto != null;
         log.info("userDetailsDto {}", userDetailsDto);
         return new org.springframework.security.core.userdetails.User(

@@ -5,7 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.client.UserClient;
+import ru.yandex.practicum.client.AccountClient;
+import ru.yandex.practicum.dto.UserDto;
 
 import java.security.Principal;
 
@@ -15,12 +16,16 @@ import java.security.Principal;
 @Slf4j
 public class AccountServiceController {
 
-    private final UserClient userClient;
+    private final AccountClient accountClient;
 
     @GetMapping
     public String getMainPage(Principal principal, Model model) {
         log.info("getMainPage for {}", principal.getName());
-        model.addAttribute("login", userClient.getCurrentUserDto(principal.getName()));
+        UserDto userDto = accountClient.getCurrentUserDto(principal.getName());
+        model.addAttribute("login", userDto.getEmail());
+        model.addAttribute("name", userDto.getFirstName() + " " + userDto.getLastName());
+        model.addAttribute("birthdate", userDto.getBirthDate());
+        model.addAttribute("accounts", userDto.getAccounts());
         return "main";
     }
 /*

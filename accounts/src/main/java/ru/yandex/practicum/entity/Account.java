@@ -19,11 +19,11 @@ public class Account {
 
     @Column
     @NonNull
-    private Double balance;
+    private Double value;
 
     @Column
     @NonNull
-    private String currency;
+    private String currencyTitle;
 
     @Column
     private boolean isDeleted;

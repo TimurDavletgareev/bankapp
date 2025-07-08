@@ -1,10 +1,14 @@
 package ru.yandex.practicum.dto;
 
+import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.model.Currency;
 
 @Data
+@Builder
 public class AccountDto {
 
-    private Double balance;
-    private String currency;
+    private Currency currency;
+    private Double value;
+    private Boolean exists;
 }

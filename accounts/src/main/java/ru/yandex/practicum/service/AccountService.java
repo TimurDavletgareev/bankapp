@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.AccountDto;
 import ru.yandex.practicum.entity.Account;
-import ru.yandex.practicum.entity.Currency;
 import ru.yandex.practicum.entity.UserAccount;
 import ru.yandex.practicum.error.exception.IncorrectRequestException;
 import ru.yandex.practicum.mapper.AccountMapper;
+import ru.yandex.practicum.model.Currency;
 import ru.yandex.practicum.repository.AccountRepository;
 import ru.yandex.practicum.repository.UserAccountRepository;
 
@@ -27,27 +27,25 @@ public class AccountService {
 
     public List<AccountDto> getByUserId(long userId) {
         log.info("getAccountsByUserId {}", userId);
-        List<Account> listToReturn = getAccountsByUserId(userId);
-        log.info("AccountsByUserId returned, list size={}", listToReturn.size());
-        return listToReturn.stream()
-                .map(accountMapper::map)
-                .toList();
+        List<Account> accountsByUserId = getAccountsByUserId(userId);
+        log.info("AccountsByUserId returned, list size={}", accountsByUserId.size());
+        return accountMapper.map(accountsByUserId);
     }
 
     @Transactional
-    public AccountDto save(Long userId, String currency) {
-        log.info("save account for userId={}, currency={}", userId, currency);
+    public AccountDto save(Long userId, String currencyTitle) {
+        log.info("save account for userId={}, currencyTitle={}", userId, currencyTitle);
         boolean isValidCurrency =
                 Arrays.stream(Currency.values())
-                        .map(existedCurrency -> existedCurrency.toString().toUpperCase())
+                        .map(existingCurrency -> existingCurrency.getTitle().toUpperCase())
                         .toList()
-                        .contains(currency.toUpperCase());
+                        .contains(currencyTitle.toUpperCase());
         if (!isValidCurrency) {
-            throw new IncorrectRequestException("Invalid currency");
+            throw new IncorrectRequestException("Invalid currencyTitle");
         }
         boolean isNewCurrency = getAccountsByUserId(userId).stream()
                 .filter(account ->
-                        currency.equalsIgnoreCase(account.getCurrency())
+                        currencyTitle.equalsIgnoreCase(account.getCurrencyTitle())
                                 && !account.isDeleted()
                 )
                 .toList()
@@ -56,8 +54,8 @@ public class AccountService {
             throw new IncorrectRequestException("Currency already exists in user accounts");
         }
         Account account = new Account();
-        account.setCurrency(currency);
-        account.setBalance(0.0);
+        account.setCurrencyTitle(currencyTitle);
+        account.setValue(0.0);
         account.setDeleted(false);
         account = accountRepository.save(account);
         userAccountRepository.save(UserAccount.builder()
@@ -77,11 +75,11 @@ public class AccountService {
         }
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IncorrectRequestException("Account id not found"));
-        double newBalance = account.getBalance() + amount;
+        double newBalance = account.getValue() + amount;
         if (newBalance < 0) {
             throw new IncorrectRequestException("Not enough balance");
         }
-        account.setBalance(account.getBalance() + amount);
+        account.setValue(account.getValue() + amount);
         accountRepository.save(account);
         log.info("Successfully updated account balance for userId={}, accountId={}, amount={}", userId, accountId, amount);
         return newBalance;
@@ -92,7 +90,7 @@ public class AccountService {
         log.info("delete all accounts for current userId={}", userId);
         List<Account> accounts = getAccountsByUserId(userId);
         boolean isEmptyBalances = accounts.stream()
-                .filter(account -> !account.getBalance().isNaN())
+                .filter(account -> !account.getValue().isNaN())
                 .toList()
                 .isEmpty();
         if (!isEmptyBalances) {
