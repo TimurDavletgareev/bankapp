@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.client.AccountClient;
-import ru.yandex.practicum.dto.UserDto;
+import ru.yandex.practicum.dto.UserFullDto;
 
 import java.security.Principal;
 
@@ -21,27 +21,27 @@ public class AccountServiceController {
     @GetMapping
     public String getMainPage(Principal principal, Model model) {
         log.info("getMainPage for {}", principal.getName());
-        UserDto userDto = accountClient.getCurrentUserDto(principal.getName());
-        model.addAttribute("login", userDto.getEmail());
-        model.addAttribute("name", userDto.getFirstName() + " " + userDto.getLastName());
-        model.addAttribute("birthdate", userDto.getBirthDate());
-        model.addAttribute("accounts", userDto.getAccounts());
+        UserFullDto userFullDto = accountClient.getCurrentUserDto(principal.getName());
+        model.addAttribute("login", userFullDto.getEmail());
+        model.addAttribute("name", userFullDto.getFirstName() + " " + userFullDto.getLastName());
+        model.addAttribute("birthdate", userFullDto.getBirthDate());
+        model.addAttribute("accounts", userFullDto.getAccounts());
         return "main";
     }
 /*
     @GetMapping
-    public UserDto getCurrentUser(Principal principal) {
+    public UserFullDto getCurrentUser(Principal principal) {
         return userClient.getCurrentUserDto(principal);
     }
 
     @PostMapping("/save")
-    public UserDto addUser(@RequestBody NewUserDto newUserDto) {
+    public UserFullDto addUser(@RequestBody NewUserDto newUserDto) {
         return userClient.saveUser(newUserDto);
     }
 
     @PostMapping("/update")
-    public UserDto updateUser(@RequestBody UserDto UserDto, Principal principal) {
-        return userClient.updateUser(UserDto, principal);
+    public UserFullDto updateUser(@RequestBody UserFullDto UserFullDto, Principal principal) {
+        return userClient.updateUser(UserFullDto, principal);
     }
 
     @PostMapping("/update-password")

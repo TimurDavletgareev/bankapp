@@ -7,11 +7,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.UserDetailsDto;
-import ru.yandex.practicum.dto.UserDto;
+import ru.yandex.practicum.dto.UserFullDto;
+import ru.yandex.practicum.dto.UserShortDto;
 import ru.yandex.practicum.entity.User;
 import ru.yandex.practicum.error.exception.NotFoundException;
 import ru.yandex.practicum.mapper.UserMapper;
 import ru.yandex.practicum.repository.UserRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -38,42 +42,50 @@ public class UserService {
         return userDetails;
     }
 
-    public UserDto getUserDtoByEmail(String email) {
+    public UserFullDto getUserDtoByEmail(String email) {
         log.info("get current user");
         User user = getUserByEmail(email);
-        UserDto userDto = userMapper.map(user);
-        userDto.setAccounts(accountService.getByUserId(user.getId()));
-        log.info("current user: {}", userDto);
-        return userDto;
+        UserFullDto userFullDto = userMapper.mapToFullDto(user);
+        userFullDto.setAccounts(accountService.getByUserId(user.getId()));
+        log.info("current user: {}", userFullDto);
+        return userFullDto;
+    }
+
+    public List<UserShortDto> getAllUsers() {
+        log.info("get all users");
+        List<UserShortDto> listToReturn = new ArrayList<>();
+        userRepository.findAll().forEach(user -> listToReturn.add(userMapper.mapToShortDto(user)));
+        log.info("getAllUsers size: {}", listToReturn);
+        return listToReturn;
     }
 
     @Transactional
-    public UserDto saveUser(NewUserDto newUserDto) {
+    public UserFullDto saveUser(NewUserDto newUserDto) {
         log.info("saveUser '{}'", newUserDto);
         if (newUserDto == null) {
-            throw new IllegalArgumentException("UserDto is null");
+            throw new IllegalArgumentException("UserFullDto is null");
         }
         if (userRepository.findByEmail(newUserDto.getEmail()) != null) {
             throw new IllegalArgumentException("Email already exists");
         }
-        User user = userMapper.map(newUserDto);
+        User user = userMapper.mapToFullDto(newUserDto);
         user.setDeleted(false);
         User savedUser = userRepository.save(user);
-        UserDto userDtoToReturn = userMapper.map(savedUser);
-        log.info("UserDto saved: {}", userDtoToReturn);
-        return userDtoToReturn;
+        UserFullDto userFullDtoToReturn = userMapper.mapToFullDto(savedUser);
+        log.info("UserFullDto saved: {}", userFullDtoToReturn);
+        return userFullDtoToReturn;
     }
 
     @Transactional
-    public UserDto updateUser(UserDto userDto, Long userId) {
-        log.info("updateUser '{}'", userDto);
-        if (userDto == null) {
+    public UserFullDto updateUser(UserFullDto userFullDto, Long userId) {
+        log.info("updateUser '{}'", userFullDto);
+        if (userFullDto == null) {
             log.warn("UpdateUserDto is null");
             return null;
         }
-        UserDto userToUpdate = userMapper.map(getUserById(userId));
-        UserDto updatedUser = userMapper.update(userDto, userToUpdate);
-        log.info("UserDto updated: {}", updatedUser);
+        UserFullDto userToUpdate = userMapper.mapToFullDto(getUserById(userId));
+        UserFullDto updatedUser = userMapper.update(userFullDto, userToUpdate);
+        log.info("UserFullDto updated: {}", updatedUser);
         return updatedUser;
     }
 
