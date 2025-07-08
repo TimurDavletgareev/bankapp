@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/update-password/{userId}")
-    public boolean updateUser(@RequestBody String password,
+    public boolean updateUserPassword(@RequestBody String password,
                               @PathVariable Long userId) {
         return userService.updatePassword(password, userId);
     }

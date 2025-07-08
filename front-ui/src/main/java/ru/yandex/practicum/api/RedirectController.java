@@ -1,4 +1,3 @@
-/*
 package ru.yandex.practicum.api;
 
 import lombok.RequiredArgsConstructor;
@@ -16,8 +15,7 @@ public class RedirectController {
     @GetMapping
     public String authenticationRedirect(Principal principal) {
         System.out.println("AFSHSAHFASJKVHAKJCB principal " + principal);
-        return "redirect:/user";
+        return "redirect:/main";
 
     }
 }
-*/

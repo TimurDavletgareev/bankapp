@@ -3,6 +3,7 @@ package ru.yandex.practicum.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.client.UserClient;
 import ru.yandex.practicum.dto.NewUserDto;
@@ -12,14 +13,18 @@ import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/main")
 @Slf4j
 public class AccountServiceController {
 
     private final UserClient userClient;
 
     @GetMapping
-    public String getCurrentUser(Principal principal) {
+    public String getMainPage(Principal principal, Model model) {
+        log.info("getMainPage for {}", principal.getName());
+        model.addAttribute("login", userClient.getAccounts(principal)
+
+
         return "Current user email: " + principal.getName();
     }
 /*
