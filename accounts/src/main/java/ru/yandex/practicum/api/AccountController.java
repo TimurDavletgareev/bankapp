@@ -2,14 +2,11 @@ package ru.yandex.practicum.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.AccountDto;
 import ru.yandex.practicum.service.AccountService;
 
-import java.security.Principal;
-
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/user/accounts")
 @Slf4j
@@ -18,9 +15,9 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/save/{userId}")
-    public AccountDto addAccount(@RequestBody String currency,
+    public AccountDto addAccount(@RequestBody String currencyTitle,
                                  @PathVariable Long userId) {
-        return accountService.save(userId, currency);
+        return accountService.save(userId, currencyTitle);
     }
 
     @PostMapping("/update/{userId}/{accountId}")

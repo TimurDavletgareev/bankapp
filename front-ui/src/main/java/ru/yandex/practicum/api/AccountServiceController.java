@@ -26,6 +26,8 @@ public class AccountServiceController {
         model.addAttribute("name", userFullDto.getFirstName() + " " + userFullDto.getLastName());
         model.addAttribute("birthdate", userFullDto.getBirthDate());
         model.addAttribute("accounts", userFullDto.getAccounts());
+        model.addAttribute("users", accountClient.getAllUsers());
+        model.addAttribute("currency", accountClient.getAllCurrencies());
         return "main";
     }
 /*

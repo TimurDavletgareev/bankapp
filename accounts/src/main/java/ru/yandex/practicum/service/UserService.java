@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.dto.NewUserDto;
-import ru.yandex.practicum.dto.UserDetailsDto;
-import ru.yandex.practicum.dto.UserFullDto;
-import ru.yandex.practicum.dto.UserShortDto;
+import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.entity.User;
 import ru.yandex.practicum.error.exception.NotFoundException;
 import ru.yandex.practicum.mapper.UserMapper;
@@ -51,12 +48,14 @@ public class UserService {
         return userFullDto;
     }
 
-    public List<UserShortDto> getAllUsers() {
+    public AllUsersDto getAllUsers() {
         log.info("get all users");
         List<UserShortDto> listToReturn = new ArrayList<>();
         userRepository.findAll().forEach(user -> listToReturn.add(userMapper.mapToShortDto(user)));
-        log.info("getAllUsers size: {}", listToReturn);
-        return listToReturn;
+        log.info("getAllUsers size: {}", listToReturn.size());
+        return AllUsersDto.builder()
+                .users(listToReturn)
+                .build();
     }
 
     @Transactional
