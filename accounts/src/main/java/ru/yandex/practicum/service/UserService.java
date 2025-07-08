@@ -38,9 +38,9 @@ public class UserService {
         return userDetails;
     }
 
-    public UserDto getUserDtoById(Long userId) {
+    public UserDto getUserDtoByEmail(String email) {
         log.info("get current user");
-        User user = getUserById(userId);
+        User user = getUserByEmail(email);
         UserDto userDto = userMapper.map(user);
         userDto.setAccounts(accountService.getByUserId(user.getId()));
         log.info("current user: {}", userDto);

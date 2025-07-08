@@ -2,13 +2,12 @@ package ru.yandex.practicum.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.UserDto;
 import ru.yandex.practicum.service.UserService;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @Slf4j
@@ -16,9 +15,9 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{userId}")
-    public UserDto getUserById(@PathVariable Long userId) {
-        return userService.getUserDtoById(userId);
+    @GetMapping
+    public UserDto getUserByEmail(@RequestParam String email) {
+        return userService.getUserDtoByEmail(email);
     }
 
     @PostMapping("/save")
@@ -34,7 +33,7 @@ public class UserController {
 
     @PostMapping("/update-password/{userId}")
     public boolean updateUserPassword(@RequestBody String password,
-                              @PathVariable Long userId) {
+                                      @PathVariable Long userId) {
         return userService.updatePassword(password, userId);
     }
 

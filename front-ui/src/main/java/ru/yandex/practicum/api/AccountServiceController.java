@@ -6,8 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.client.UserClient;
-import ru.yandex.practicum.dto.NewUserDto;
-import ru.yandex.practicum.dto.UserDto;
 
 import java.security.Principal;
 
@@ -22,10 +20,8 @@ public class AccountServiceController {
     @GetMapping
     public String getMainPage(Principal principal, Model model) {
         log.info("getMainPage for {}", principal.getName());
-        model.addAttribute("login", userClient.getAccounts(principal)
-
-
-        return "Current user email: " + principal.getName();
+        model.addAttribute("login", userClient.getCurrentUserDto(principal.getName()));
+        return "main";
     }
 /*
     @GetMapping
