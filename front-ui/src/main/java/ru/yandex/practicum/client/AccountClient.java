@@ -35,4 +35,13 @@ public class AccountClient {
         String endpoint = "/currency";
         return accountClientService.get(endpoint, CurrencyDto.class).getCurrency();
     }
+
+    public boolean updateUserPassword(String email, String password) {
+        log.info("updateUserPassword");
+        String endpoint =
+                "/user/update-password"
+                        + "?email=" + email
+                        + "&password=" + password;
+        return accountClientService.post(endpoint, boolean.class);
+    }
 }

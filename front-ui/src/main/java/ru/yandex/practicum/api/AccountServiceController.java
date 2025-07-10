@@ -4,21 +4,24 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.client.AccountClient;
 import ru.yandex.practicum.dto.UserFullDto;
+import ru.yandex.practicum.error.exception.IncorrectRequestException;
 
 import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/main")
 @Slf4j
 public class AccountServiceController {
 
     private final AccountClient accountClient;
 
-    @GetMapping
+    @GetMapping("/main")
     public String getMainPage(Principal principal, Model model) {
         log.info("getMainPage for {}", principal.getName());
         UserFullDto userFullDto = accountClient.getCurrentUserDto(principal.getName());
@@ -30,11 +33,25 @@ public class AccountServiceController {
         model.addAttribute("currency", accountClient.getAllCurrencies());
         return "main";
     }
-/*
-    @GetMapping
-    public UserFullDto getCurrentUser(Principal principal) {
-        return userClient.getCurrentUserDto(principal);
+
+    @PostMapping("/user/{login}/editPassword")
+    public String editUserPassword(@PathVariable String login,
+                                   @RequestParam String password,
+                                   @RequestParam String confirm_password,
+                                   Principal principal) {
+        if (!login.equals(principal.getName())) {
+            throw new IncorrectRequestException("Not current user login");
+        }
+        if (!password.equals(confirm_password)) {
+            throw new IncorrectRequestException("Wrong password confirmation");
+        }
+        if (!accountClient.updateUserPassword(login, password)) {
+            System.out.println("JKSHGSDBJSKDBLKJA passwordChangeError"); //TODO: add to errors list
+        }
+        return "redirect:/main";
     }
+
+    /*
 
     @PostMapping("/save")
     public UserFullDto addUser(@RequestBody NewUserDto newUserDto) {

@@ -89,7 +89,7 @@ public class UserService {
     }
 
     @Transactional
-    public boolean updatePassword(String password, String email) {
+    public boolean updatePassword(String email, String password) {
         log.info("updatePassword");
         User user = getUserByEmail(email);
         user.setPassword(userMapper.mapPassword(password));

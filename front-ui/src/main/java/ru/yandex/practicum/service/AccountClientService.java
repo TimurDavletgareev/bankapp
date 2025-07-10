@@ -24,4 +24,15 @@ public class AccountClientService {
                 .retrieve()
                 .body(type);
     }
+
+    public <T> T post(String endpoint, Class<T> type) {
+        String accessToken = tokenService.get();
+        endpoint = resource + endpoint;
+        RestClient restClient = RestClient.create(resource);
+        return restClient.post()
+                .uri(endpoint)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .body(type);
+    }
 }
