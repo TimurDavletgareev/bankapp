@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dto.AllUsersDto;
 import ru.yandex.practicum.dto.CurrencyDto;
 import ru.yandex.practicum.dto.UserFullDto;
+import ru.yandex.practicum.model.Currency;
 import ru.yandex.practicum.service.AccountClientService;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -27,9 +30,9 @@ public class AccountClient {
         return accountClientService.get(endpoint, AllUsersDto.class);
     }
 
-    public CurrencyDto getAllCurrencies() {
+    public List<Currency> getAllCurrencies() {
         log.info("getAllCurrencies");
         String endpoint = "/currency";
-        return accountClientService.get(endpoint, CurrencyDto.class);
+        return accountClientService.get(endpoint, CurrencyDto.class).getCurrency();
     }
 }
