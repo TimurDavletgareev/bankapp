@@ -26,7 +26,7 @@ public class AccountServiceController {
         log.info("getMainPage for {}", principal.getName());
         UserFullDto userFullDto = accountClient.getCurrentUserDto(principal.getName());
         model.addAttribute("login", userFullDto.getEmail());
-        model.addAttribute("name", userFullDto.getFirstName() + " " + userFullDto.getLastName());
+        model.addAttribute("name", userFullDto.getName());
         model.addAttribute("birthdate", userFullDto.getBirthDate());
         model.addAttribute("accounts", userFullDto.getAccounts());
         model.addAttribute("users", accountClient.getAllUsers().getUsers());
