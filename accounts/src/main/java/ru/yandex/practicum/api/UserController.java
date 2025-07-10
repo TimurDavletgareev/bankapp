@@ -31,20 +31,20 @@ public class UserController {
         return userService.saveUser(newUserDto);
     }
 
-    @PostMapping("/update/{userId}")
+    @PostMapping("/update/{email}")
     public UserFullDto updateUser(@RequestBody UserFullDto UserFullDto,
-                                  @PathVariable Long userId) {
-        return userService.updateUser(UserFullDto, userId);
+                                  @PathVariable String email) {
+        return userService.updateUser(UserFullDto, email);
     }
 
-    @PostMapping("/update-password/{userId}")
+    @PostMapping("/update-password/{email}")
     public boolean updateUserPassword(@RequestBody String password,
-                                      @PathVariable Long userId) {
-        return userService.updatePassword(password, userId);
+                                      @PathVariable String email) {
+        return userService.updatePassword(password, email);
     }
 
-    @DeleteMapping("/delete/{userId}")
-    public boolean deleteUser(@PathVariable Long userId) {
-        return userService.deleteUser(userId);
+    @DeleteMapping("/delete/{email}")
+    public boolean deleteUser(@PathVariable String email) {
+        return userService.deleteUser(email);
     }
 }

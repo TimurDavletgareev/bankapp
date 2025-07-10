@@ -76,22 +76,22 @@ public class UserService {
     }
 
     @Transactional
-    public UserFullDto updateUser(UserFullDto userFullDto, Long userId) {
+    public UserFullDto updateUser(UserFullDto userFullDto, String email) {
         log.info("updateUser '{}'", userFullDto);
         if (userFullDto == null) {
             log.warn("UpdateUserDto is null");
             return null;
         }
-        UserFullDto userToUpdate = userMapper.mapToFullDto(getUserById(userId));
+        UserFullDto userToUpdate = userMapper.mapToFullDto(getUserByEmail(email));
         UserFullDto updatedUser = userMapper.update(userFullDto, userToUpdate);
         log.info("UserFullDto updated: {}", updatedUser);
         return updatedUser;
     }
 
     @Transactional
-    public boolean updatePassword(String password, Long userId) {
+    public boolean updatePassword(String password, String email) {
         log.info("updatePassword");
-        User user = getUserById(userId);
+        User user = getUserByEmail(email);
         user.setPassword(userMapper.mapPassword(password));
         userRepository.save(user);
         log.info("Password updated");
@@ -99,22 +99,14 @@ public class UserService {
     }
 
     @Transactional
-    public boolean deleteUser(Long userId) {
+    public boolean deleteUser(String email) {
         log.info("deleteUser");
-        User user = getUserById(userId);
+        User user = getUserByEmail(email);
         user.setDeleted(true);
         userRepository.save(user);
         accountService.deleteAllByUserId(user.getId());
         log.info("user deleted");
         return true;
-    }
-
-    private User getUserById(Long userId) {
-        if (userId == null) {
-            throw new IllegalArgumentException("userId cannot be null");
-        }
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found by id=" + userId));
     }
 
     private User getUserByEmail(String email) {
