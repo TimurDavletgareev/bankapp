@@ -28,7 +28,7 @@ public class SecurityConfiguration {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true) // Удаление сессии при выходе
                         .deleteCookies("JSESSIONID") // Удаление куки сессии
                 )
