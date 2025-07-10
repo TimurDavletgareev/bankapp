@@ -32,9 +32,10 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public UserFullDto updateUser(@RequestBody UserFullDto UserFullDto,
-                                  @RequestParam String email) {
-        return userService.updateUser(UserFullDto, email);
+    public boolean updateUser(@RequestParam String email,
+                              @RequestParam(required = false) String name,
+                              @RequestParam(required = false) String birthDate) {
+        return userService.updateUser(email, name, birthDate);
     }
 
     @PostMapping("/update-password")

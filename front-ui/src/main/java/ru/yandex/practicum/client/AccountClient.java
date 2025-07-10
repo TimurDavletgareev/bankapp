@@ -10,7 +10,9 @@ import ru.yandex.practicum.dto.UserFullDto;
 import ru.yandex.practicum.model.Currency;
 import ru.yandex.practicum.service.AccountClientService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -40,11 +42,31 @@ public class AccountClient {
 
     public boolean updateUserPassword(String email, String password) {
         log.info("updateUserPassword");
-
-        String endpoint =
-                "/user/update-password"
-                        + "?email=" + email
-                        + "&password=" + passwordEncoder.encode(password);
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("password", passwordEncoder.encode(password));
+        String endpoint = "/user/update-password" + makeRequestParams(params);
         return accountClientService.post(endpoint, boolean.class);
+    }
+
+    public boolean updateUser(String email, String name, String birthDate) {
+        log.info("updateUser");
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        if (name != null) params.put("name", name);
+        if (birthDate != null) params.put("birthDate", birthDate);
+        String endpoint = "/user/update" + makeRequestParams(params);
+        return accountClientService.post(endpoint, boolean.class);
+    }
+
+    private String makeRequestParams(Map<String, String> params) {
+        StringBuilder requestParams = new StringBuilder();
+        requestParams.append("?");
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            requestParams.append(key).append("=").append(value).append("&");
+        }
+        return requestParams.toString();
     }
 }

@@ -19,7 +19,7 @@ public class UserMapper {
         return objectMapper.convertValue(user, UserFullDto.class);
     }
 
-    public User mapToFullDto(NewUserDto newUserDto) {
+    public User mapToUser(NewUserDto newUserDto) {
         return objectMapper.convertValue(newUserDto, User.class);
     }
 
@@ -30,9 +30,9 @@ public class UserMapper {
                 .build();
     }
 
-    public UserFullDto update(UserFullDto userFullDtoWithUpdates, UserFullDto userFullDtoToUpdate) {
-        NullChecker.setIfNotNull(userFullDtoToUpdate::setName, userFullDtoWithUpdates.getName());
-        NullChecker.setIfNotNull(userFullDtoToUpdate::setBirthDate, userFullDtoWithUpdates.getBirthDate());
-        return userFullDtoToUpdate;
+    public User update(UserFullDto userFullDtoWithUpdates, User userToUpdate) {
+        NullChecker.setIfNotNull(userToUpdate::setName, userFullDtoWithUpdates.getName());
+        NullChecker.setIfNotNull(userToUpdate::setBirthDate, userFullDtoWithUpdates.getBirthDate());
+        return userToUpdate;
     }
 }

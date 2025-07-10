@@ -51,6 +51,20 @@ public class AccountServiceController {
         return "redirect:/main";
     }
 
+    @PostMapping("/user/{login}/editUserAccounts")
+    public String updateUser(@PathVariable String login,
+                             @RequestParam(required = false) String name,
+                             @RequestParam(required = false) String birthdate,
+                             Principal principal) {
+        if (!login.equals(principal.getName())) {
+            throw new IncorrectRequestException("Not current user login");
+        }
+        if (!accountClient.updateUser(login, name, birthdate)) {
+            System.out.println("JKSHGSDBJSKDBLKJA updateUserError"); //TODO: add to errors list
+        }
+        return "redirect:/main";
+    }
+
     /*
 
     @PostMapping("/save")
@@ -58,15 +72,7 @@ public class AccountServiceController {
         return userClient.saveUser(newUserDto);
     }
 
-    @PostMapping("/update")
-    public UserFullDto updateUser(@RequestBody UserFullDto UserFullDto, Principal principal) {
-        return userClient.updateUser(UserFullDto, principal);
-    }
 
-    @PostMapping("/update-password")
-    public boolean updateUser(@RequestBody String password, Principal principal) {
-        return userClient.updatePassword(password, principal);
-    }
 
     @DeleteMapping("/delete")
     public boolean deleteUser(Principal principal) {

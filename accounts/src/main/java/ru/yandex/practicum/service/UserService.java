@@ -8,8 +8,10 @@ import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.entity.User;
 import ru.yandex.practicum.error.exception.NotFoundException;
 import ru.yandex.practicum.mapper.UserMapper;
+import ru.yandex.practicum.model.Currency;
 import ru.yandex.practicum.repository.UserRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,25 +65,31 @@ public class UserService {
         if (userRepository.findByEmail(newUserDto.getEmail()) != null) {
             throw new IllegalArgumentException("Email already exists");
         }
-        User user = userMapper.mapToFullDto(newUserDto);
+        User user = userMapper.mapToUser(newUserDto);
         user.setDeleted(false);
         User savedUser = userRepository.save(user);
         UserFullDto userFullDtoToReturn = userMapper.mapToFullDto(savedUser);
         log.info("UserFullDto saved: {}", userFullDtoToReturn);
+        for (Currency currency : Currency.values()) {
+            accountService.save(userFullDtoToReturn.getId(), currency.getTitle());
+        }
         return userFullDtoToReturn;
     }
 
     @Transactional
-    public UserFullDto updateUser(UserFullDto userFullDto, String email) {
-        log.info("updateUser '{}'", userFullDto);
-        if (userFullDto == null) {
-            log.warn("UpdateUserDto is null");
-            return null;
+    public boolean updateUser(String email, String name, String birthDate) {
+        UserFullDto userDtoWithUpdates = new UserFullDto();
+        if (name != null && !name.isBlank()) {
+            userDtoWithUpdates.setName(name);
         }
-        UserFullDto userToUpdate = userMapper.mapToFullDto(getUserByEmail(email));
-        UserFullDto updatedUser = userMapper.update(userFullDto, userToUpdate);
-        log.info("UserFullDto updated: {}", updatedUser);
-        return updatedUser;
+        if (birthDate != null) {
+            userDtoWithUpdates.setBirthDate(LocalDate.parse(birthDate));
+        }
+        log.info("updateUser '{}'", email);
+        User updatedUserToSave = userMapper.update(userDtoWithUpdates, getUserByEmail(email));
+        UserFullDto updatedUserDto = userMapper.mapToFullDto(userRepository.save(updatedUserToSave));
+        log.info("User updated: {}", updatedUserDto);
+        return true;
     }
 
     @Transactional
