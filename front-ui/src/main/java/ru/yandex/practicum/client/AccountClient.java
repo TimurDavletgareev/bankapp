@@ -2,6 +2,7 @@ package ru.yandex.practicum.client;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dto.AllUsersDto;
 import ru.yandex.practicum.dto.CurrencyDto;
@@ -17,6 +18,7 @@ import java.util.List;
 public class AccountClient {
 
     private final AccountClientService accountClientService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserFullDto getCurrentUserDto(String email) {
         log.info("getCurrentUserDto by email{}", email);
@@ -38,10 +40,11 @@ public class AccountClient {
 
     public boolean updateUserPassword(String email, String password) {
         log.info("updateUserPassword");
+
         String endpoint =
                 "/user/update-password"
                         + "?email=" + email
-                        + "&password=" + password;
+                        + "&password=" + passwordEncoder.encode(password);
         return accountClientService.post(endpoint, boolean.class);
     }
 }

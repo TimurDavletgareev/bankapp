@@ -26,11 +26,7 @@ public class User {
 
     @Column
     @NonNull
-    private String firstName;
-
-    @Column
-    @NonNull
-    private String lastName;
+    private String name;
 
     @Column
     @NonNull

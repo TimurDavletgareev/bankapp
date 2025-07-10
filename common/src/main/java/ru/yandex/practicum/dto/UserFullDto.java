@@ -12,9 +12,7 @@ public class UserFullDto {
 
     private String email;
 
-    private String firstName;
-
-    private String lastName;
+    private String name;
 
     private LocalDate birthDate;
 

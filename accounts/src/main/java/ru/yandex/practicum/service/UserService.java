@@ -2,7 +2,6 @@ package ru.yandex.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.*;
@@ -24,15 +23,12 @@ public class UserService {
     private final UserMapper userMapper;
     private final AccountService accountService;
 
-    private final PasswordEncoder passwordEncoder; //TODO: for test only
-
     public UserDetailsDto loadUserByUsername(String userName) {
         log.info("loadUserByUsername '{}'", userName);
         User user = getUserByEmail(userName);
         UserDetailsDto userDetails = new UserDetailsDto(
                 user.getEmail(),
-                //кодируем, т.к. пользователь создаётся в бд на старте
-                passwordEncoder.encode((user.getPassword())), //TODO: for test only
+                user.getPassword(),
                 roleService.getRoles(user.getId())
         );
         log.info("UserDetails returned: {}", userDetails);
@@ -92,7 +88,7 @@ public class UserService {
     public boolean updatePassword(String email, String password) {
         log.info("updatePassword");
         User user = getUserByEmail(email);
-        user.setPassword(userMapper.mapPassword(password));
+        user.setPassword(password);
         userRepository.save(user);
         log.info("Password updated");
         return true;

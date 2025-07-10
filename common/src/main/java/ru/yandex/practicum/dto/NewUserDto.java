@@ -12,9 +12,7 @@ public class NewUserDto {
     @NonNull
     private String email;
     @NonNull
-    private String firstName;
-    @NonNull
-    private String lastName;
+    private String name;
     @NonNull
     private LocalDate birthDate;
     @NonNull
