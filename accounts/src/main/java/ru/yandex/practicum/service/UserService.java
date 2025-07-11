@@ -8,7 +8,6 @@ import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.entity.User;
 import ru.yandex.practicum.error.exception.NotFoundException;
 import ru.yandex.practicum.mapper.UserMapper;
-import ru.yandex.practicum.model.Currency;
 import ru.yandex.practicum.repository.UserRepository;
 
 import java.time.LocalDate;
@@ -69,10 +68,9 @@ public class UserService {
         user.setDeleted(false);
         User savedUser = userRepository.save(user);
         UserFullDto userFullDtoToReturn = userMapper.mapToFullDto(savedUser);
+        List<AccountDto> accounts = accountService.createAccountsForNewUser(savedUser.getId());
+        userFullDtoToReturn.setAccounts(accounts);
         log.info("UserFullDto saved: {}", userFullDtoToReturn);
-        for (Currency currency : Currency.values()) {
-            accountService.save(userFullDtoToReturn.getId(), currency.getTitle());
-        }
         return userFullDtoToReturn;
     }
 
@@ -82,7 +80,7 @@ public class UserService {
         if (name != null && !name.isBlank()) {
             userDtoWithUpdates.setName(name);
         }
-        if (birthDate != null) {
+        if (birthDate != null && !birthDate.isBlank()) {
             userDtoWithUpdates.setBirthDate(LocalDate.parse(birthDate));
         }
         log.info("updateUser '{}'", email);

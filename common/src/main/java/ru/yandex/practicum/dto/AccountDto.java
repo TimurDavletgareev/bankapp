@@ -11,4 +11,8 @@ public class AccountDto {
     private Currency currency;
     private Double value;
     private Boolean exists;
+
+    public Boolean isExists() {
+        return exists;
+    }
 }

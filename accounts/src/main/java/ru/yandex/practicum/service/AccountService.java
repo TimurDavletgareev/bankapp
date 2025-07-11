@@ -13,7 +13,6 @@ import ru.yandex.practicum.model.Currency;
 import ru.yandex.practicum.repository.AccountRepository;
 import ru.yandex.practicum.repository.UserAccountRepository;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -29,41 +28,29 @@ public class AccountService {
         log.info("getAccountsByUserId {}", userId);
         List<Account> accountsByUserId = getAccountsByUserId(userId);
         log.info("AccountsByUserId returned, list size={}", accountsByUserId.size());
-        return accountMapper.map(accountsByUserId);
+        return accountsByUserId.stream()
+                .map(accountMapper::map)
+                .toList();
     }
 
     @Transactional
-    public AccountDto save(Long userId, String currencyTitle) {
-        log.info("save account for userId={}, currencyTitle={}", userId, currencyTitle);
-        boolean isValidCurrency =
-                Arrays.stream(Currency.values())
-                        .map(existingCurrency -> existingCurrency.getTitle().toUpperCase())
-                        .toList()
-                        .contains(currencyTitle.toUpperCase());
-        if (!isValidCurrency) {
-            throw new IncorrectRequestException("Invalid currencyTitle");
+    public List<AccountDto> createAccountsForNewUser(Long userId) {
+        log.info("save account for userId={}", userId);
+        List<AccountDto> accountDtoList = getByUserId(userId);
+        for (Currency currency : Currency.values()) {
+            Account account = new Account();
+            account.setCurrencyTitle(currency.getTitle());
+            account.setValue(0.0);
+            account.setDeleted(false);
+            account = accountRepository.save(account);
+            userAccountRepository.save(UserAccount.builder()
+                    .userId(userId)
+                    .accountId(account.getId())
+                    .build());
+            accountDtoList.add(accountMapper.map(account));
         }
-        boolean isNewCurrency = getAccountsByUserId(userId).stream()
-                .filter(account ->
-                        currencyTitle.equalsIgnoreCase(account.getCurrencyTitle())
-                                && !account.isDeleted()
-                )
-                .toList()
-                .isEmpty();
-        if (!isNewCurrency) {
-            throw new IncorrectRequestException("Currency already exists in user accounts");
-        }
-        Account account = new Account();
-        account.setCurrencyTitle(currencyTitle);
-        account.setValue(0.0);
-        account.setDeleted(false);
-        account = accountRepository.save(account);
-        userAccountRepository.save(UserAccount.builder()
-                .userId(userId)
-                .accountId(account.getId())
-                .build());
-        log.info("account for userId={} saved: {}", userId, account);
-        return accountMapper.map(account);
+        log.info("accounts for userId={} saved", userId);
+        return accountDtoList;
     }
 
     @Transactional

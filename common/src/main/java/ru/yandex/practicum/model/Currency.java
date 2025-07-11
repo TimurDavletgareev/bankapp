@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public enum Currency {
 
-    RUB("Russian ruble"),
-    USD("American dollar"),
-    CNY("Chinese yen");
+    RUB("Ruble"),
+    USD("Dollar"),
+    CNY("Yen");
 
     private final String title;
 
