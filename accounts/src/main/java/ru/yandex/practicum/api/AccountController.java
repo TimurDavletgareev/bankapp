@@ -3,7 +3,9 @@ package ru.yandex.practicum.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.model.Currency;
 import ru.yandex.practicum.service.AccountService;
+import ru.yandex.practicum.service.UserService;
 
 @RestController
 @RequiredArgsConstructor
@@ -12,17 +14,22 @@ import ru.yandex.practicum.service.AccountService;
 public class AccountController {
 
     private final AccountService accountService;
+    private final UserService userService;
 
-    @PostMapping("/update/{userId}/{accountId}")
-    public Double updateBalance(@PathVariable Long userId,
-                                @PathVariable Long accountId,
-                                @RequestBody Double amount) {
-        return accountService.updateBalance(userId, accountId, amount);
+    @PostMapping("/change-account")
+    public boolean create(@RequestParam String email,
+                          @RequestParam String accountsString) {
+        return accountService.changeAccounts(getUserId(email), accountsString);
     }
 
-    @DeleteMapping("/delete/{userId}/{accountId}")
-    public boolean deleteAccount(@PathVariable Long userId,
-                                 @PathVariable Long accountId) {
-        return accountService.deleteByAccountId(userId, accountId);
+    @PostMapping("/update-balance")
+    public Double updateBalance(@RequestParam String email,
+                                @RequestParam Currency currency,
+                                @RequestParam Double amount) {
+        return accountService.updateBalance(getUserId(email), currency, amount);
+    }
+
+    private Long getUserId(String email) {
+        return userService.getUserDtoByEmail(email).getId();
     }
 }

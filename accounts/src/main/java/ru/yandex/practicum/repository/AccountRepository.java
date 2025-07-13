@@ -10,5 +10,7 @@ import java.util.List;
 @Repository
 public interface AccountRepository extends CrudRepository<Account, Long> {
 
-    List<Account> findByIdIn(List<Long> ids);
+    List<Account> findByUserId(Long userId);
+
+    Account findByUserIdAndCurrencyName(Long userId, String currencyName);
 }

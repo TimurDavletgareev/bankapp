@@ -68,8 +68,7 @@ public class UserService {
         user.setDeleted(false);
         User savedUser = userRepository.save(user);
         UserFullDto userFullDtoToReturn = userMapper.mapToFullDto(savedUser);
-        List<AccountDto> accounts = accountService.createAccountsForNewUser(savedUser.getId());
-        userFullDtoToReturn.setAccounts(accounts);
+        userFullDtoToReturn.setAccounts(accountService.createNewUserAccounts(savedUser.getId()));
         log.info("UserFullDto saved: {}", userFullDtoToReturn);
         return userFullDtoToReturn;
     }

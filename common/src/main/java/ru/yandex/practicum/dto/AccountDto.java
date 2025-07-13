@@ -8,6 +8,7 @@ import ru.yandex.practicum.model.Currency;
 @Builder
 public class AccountDto {
 
+    private Long id;
     private Currency currency;
     private Double value;
     private Boolean exists;

@@ -19,12 +19,16 @@ public class Account {
 
     @Column
     @NonNull
+    private Long userId;
+
+    @Column
+    @NonNull
     private Double value;
 
     @Column
     @NonNull
-    private String currencyTitle;
+    private String currencyName;
 
     @Column
-    private boolean isDeleted;
+    private boolean isExists;
 }

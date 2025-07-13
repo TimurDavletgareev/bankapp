@@ -59,6 +59,15 @@ public class AccountClient {
         return accountClientService.post(endpoint, boolean.class);
     }
 
+    public boolean changeAccount(String email, String account) {
+        log.info("changeAccount: {}", account);
+        Map<String, String> params = new HashMap<>();
+        params.put("email", email);
+        params.put("accountsString", account);
+        String endpoint = "/user/accounts/change-account" + makeRequestParams(params);
+        return accountClientService.post(endpoint, boolean.class);
+    }
+
     private String makeRequestParams(Map<String, String> params) {
         StringBuilder requestParams = new StringBuilder();
         requestParams.append("?");

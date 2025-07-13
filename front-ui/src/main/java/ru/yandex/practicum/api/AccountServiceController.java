@@ -55,12 +55,17 @@ public class AccountServiceController {
     public String updateUser(@PathVariable String login,
                              @RequestParam(required = false) String name,
                              @RequestParam(required = false) String birthdate,
+                             @RequestParam(required = false) String account,
                              Principal principal) {
         if (!login.equals(principal.getName())) {
             throw new IncorrectRequestException("Not current user login");
         }
         if (!accountClient.updateUser(login, name, birthdate)) {
             System.out.println("JKSHGSDBJSKDBLKJA updateUserError"); //TODO: add to errors list
+        }
+        System.out.println("ASJKFASGJ ACCOUNT=" + account);
+        if (!accountClient.changeAccount(login, account)) {
+            System.out.println("NJVKKLJV changeAccountError"); //TODO: add to errors list
         }
         return "redirect:/main";
     }
