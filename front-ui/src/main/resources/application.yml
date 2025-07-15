@@ -26,3 +26,4 @@ gateway: ${GATEWAY_URL}
 resource:
   alias:
     accounts: /accounts
+    exchange-generator: /exchange-generator

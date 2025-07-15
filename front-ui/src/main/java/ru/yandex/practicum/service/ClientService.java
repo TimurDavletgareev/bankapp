@@ -8,16 +8,11 @@ import org.springframework.web.client.RestClient;
 
 @Service
 @RequiredArgsConstructor
-public class AccountClientService {
+public class ClientService {
 
     @Value("${gateway}")
     private String gateway;
-
-    @Value("${resource.alias.accounts}")
-    private String resourceAlias;
-
     private final TokenService tokenService;
-
     private RestClient restClient;
 
     @PostConstruct
@@ -25,7 +20,7 @@ public class AccountClientService {
         this.restClient = RestClient.create(gateway);
     }
 
-    public <T> T get(String endpoint, Class<T> type) {
+    public <T> T get(String resourceAlias, String endpoint, Class<T> type) {
         String accessToken = tokenService.get();
         endpoint = gateway + resourceAlias + endpoint;
         return restClient.get()
@@ -35,7 +30,7 @@ public class AccountClientService {
                 .body(type);
     }
 
-    public <T> T post(String endpoint, Class<T> type) {
+    public <T> T post(String resourceAlias, String endpoint, Class<T> type) {
         String accessToken = tokenService.get();
         endpoint = gateway + resourceAlias + endpoint; //gateway + resourceAlias + endpoint;
         return restClient.post()

@@ -1,0 +1,11 @@
+server:
+  port: 8020
+
+spring:
+  application:
+    name: bankapp-exchange-generator
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER_URI}
