@@ -1,5 +1,5 @@
 server:
-  port: 8000
+  port: 8080
 
 spring:
   application:
@@ -21,6 +21,8 @@ spring:
             scope: profile
             clientAuthenticationMethod: client_secret_post
 
+gateway: ${GATEWAY_URL}
+
 resource:
-  server:
-    accounts: ${ACCOUNTS_SERVER_URL}
+  alias:
+    accounts: /accounts

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,15 +10,24 @@ import org.springframework.web.client.RestClient;
 @RequiredArgsConstructor
 public class AccountClientService {
 
-    @Value("${resource.server.accounts}")
-    private String resource;
+    @Value("${gateway}")
+    private String gateway;
+
+    @Value("${resource.alias.accounts}")
+    private String resourceAlias;
 
     private final TokenService tokenService;
 
+    private RestClient restClient;
+
+    @PostConstruct
+    public void init() {
+        this.restClient = RestClient.create(gateway);
+    }
+
     public <T> T get(String endpoint, Class<T> type) {
         String accessToken = tokenService.get();
-        endpoint = resource + endpoint;
-        RestClient restClient = RestClient.create(resource);
+        endpoint = gateway + resourceAlias + endpoint;
         return restClient.get()
                 .uri(endpoint)
                 .header("Authorization", "Bearer " + accessToken)
@@ -27,8 +37,7 @@ public class AccountClientService {
 
     public <T> T post(String endpoint, Class<T> type) {
         String accessToken = tokenService.get();
-        endpoint = resource + endpoint;
-        RestClient restClient = RestClient.create(resource);
+        endpoint = gateway + resourceAlias + endpoint; //gateway + resourceAlias + endpoint;
         return restClient.post()
                 .uri(endpoint)
                 .header("Authorization", "Bearer " + accessToken)

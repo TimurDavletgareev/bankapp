@@ -16,6 +16,7 @@
         <module name="cash" />
         <module name="exchange-generator" />
         <module name="notifications" />
+        <module name="gateway" />
       </profile>
     </annotationProcessing>
   </component>
@@ -28,6 +29,7 @@
       <module name="exchange" options="-parameters" />
       <module name="exchange-generator" options="-parameters" />
       <module name="front-ui" options="-parameters" />
+      <module name="gateway" options="-parameters" />
       <module name="notifications" options="-parameters" />
       <module name="transfer" options="-parameters" />
     </option>

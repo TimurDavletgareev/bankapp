@@ -1,0 +1,21 @@
+server:
+  port: 8000
+spring:
+  application:
+    name: bankapp-gateway
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            bankapp-accounts:
+              - uri: http://127.0.0.1:8010 # TODO: Заменить на переменную окружения
+    gateway:
+      mvc:
+        routes:
+          - id: accounts-route  # ID роута
+            uri: lb://bankapp-accounts  # URI микросервиса, на который следует перенаправлять запрос
+            predicates:
+              - Path=/accounts/** # URI поступающего в гейтвей запроса, которому матчится роут
+            filters:
+              - RewritePath=/accounts/?(?<segment>.*), /$\{segment} # фильтр, модифицирующий запрос к целевому сервису (убирается имя сервиса в начале)
