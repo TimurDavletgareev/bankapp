@@ -2,8 +2,14 @@ server:
   port: 8010
 
 spring:
+
   application:
     name: bankapp-accounts
+
+  sql:
+    init:
+      mode: always
+
   security:
     oauth2:
       resourceserver:

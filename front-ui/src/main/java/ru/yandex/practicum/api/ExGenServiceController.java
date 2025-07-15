@@ -18,7 +18,6 @@ public class ExGenServiceController {
 
     @GetMapping("/api/rates")
     public List<Rate> getRates() {
-        //model.addAttribute("rates", exchangeGeneratorClient.getRates());
         return exchangeGeneratorClient.getRates();
     }
 }

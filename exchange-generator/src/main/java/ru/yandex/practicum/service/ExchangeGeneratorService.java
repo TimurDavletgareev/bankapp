@@ -18,13 +18,16 @@ public class ExchangeGeneratorService {
         log.info("generating rates");
         List<Rate> rates = new ArrayList<>();
         Arrays.stream(Currency.values())
-                .filter(currency -> currency != Currency.RUB)
                 .forEach(currency -> {
                     Rate rate = new Rate();
                     rate.setName(currency.name());
                     rate.setTitle(currency.getTitle());
-                    RandomGenerator randomGenerator = RandomGenerator.getDefault();
-                    rate.setValue(randomGenerator.nextDouble(89, 99));
+                    if (currency == Currency.RUB) {
+                        rate.setValue(1.0);
+                    } else {
+                        RandomGenerator randomGenerator = RandomGenerator.getDefault();
+                        rate.setValue(randomGenerator.nextDouble(89, 99));
+                    }
                     log.info("generated rate {}", rate);
                     rates.add(rate);
                 });
