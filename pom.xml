@@ -23,7 +23,8 @@
         <module>notifications</module>
 		<module>common</module>
 		<module>gateway</module>
-	</modules>
+        <module>config-server</module>
+    </modules>
 	<properties>
 		<java.version>21</java.version>
 	</properties>
