@@ -3,19 +3,9 @@ server:
 spring:
   application:
     name: bankapp-gateway
-  cloud:
-    discovery:
-      client:
-        simple:
-          instances:
-            bankapp-accounts:
-              - uri: http://127.0.0.1:8010 # TODO: Заменить на переменную окружения
-            bankapp-exchange-generator:
-              - uri: http://127.0.0.1:8020 # TODO: Заменить на переменную окружения
-            bankapp-exchange:
-              - uri: http://127.0.0.1:8030 # TODO: Заменить на переменную окружения
-            bankapp-transfer:
-              - uri: http://127.0.0.1:8040 # TODO: Заменить на переменную окружения
+  config:
+    import: configserver:http://127.0.0.1:8888
+
     gateway:
       mvc:
         routes:
