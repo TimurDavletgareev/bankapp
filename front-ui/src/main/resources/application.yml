@@ -27,3 +27,4 @@ resource:
   alias:
     accounts: /accounts
     exchange-generator: /exchange-generator
+    transfer: /transfer

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.AccountDto;
+import ru.yandex.practicum.dto.ExchangeDto;
 import ru.yandex.practicum.entity.Account;
 import ru.yandex.practicum.error.exception.IncorrectRequestException;
 import ru.yandex.practicum.mapper.AccountMapper;
@@ -91,20 +92,32 @@ public class AccountService {
     }
 
     @Transactional
-    public Double updateBalance(Long userId, Currency currency, Double amount) {
-        log.info("update account balance for userId={}, currency={}, amount={}", userId, currency, amount);
-        Account account = accountRepository.findByUserIdAndCurrencyName(userId, currency.name());
-        if (account == null) {
+    public void updateBalance(Long fromUserId, Long toUserId, ExchangeDto exchangeDto) {
+        log.info("update accounts balance: {}", exchangeDto);
+        Account fromAccount = accountRepository.findByUserIdAndCurrencyName(fromUserId, exchangeDto.getFromCurrency());
+        if (fromAccount == null) {
             throw new IncorrectRequestException("Account not found");
         }
-        double newBalance = account.getValue() + amount;
+        double newBalance = fromAccount.getValue() + exchangeDto.getFromValue();
         if (newBalance < 0) {
             throw new IncorrectRequestException("Not enough balance");
         }
-        account.setValue(account.getValue() + amount);
-        accountRepository.save(account);
-        log.info("Successfully updated account balance for userId={}, currency={}, amount={}", userId, currency, amount);
-        return newBalance;
+        fromAccount.setValue(fromAccount.getValue() + exchangeDto.getFromValue());
+        accountRepository.save(fromAccount);
+        log.info("Successfully updated fromAccount balance for fromUserId={}, currency={}, amount={}",
+                fromUserId, exchangeDto.getFromCurrency(), exchangeDto.getFromValue());
+        Account toAccount = accountRepository.findByUserIdAndCurrencyName(toUserId, exchangeDto.getToCurrency());
+        if (toAccount == null) {
+            throw new IncorrectRequestException("Account not found");
+        }
+        newBalance = toAccount.getValue() + exchangeDto.getToValue();
+        if (newBalance < 0) {
+            throw new IncorrectRequestException("Not enough balance");
+        }
+        toAccount.setValue(toAccount.getValue() + exchangeDto.getToValue());
+        accountRepository.save(toAccount);
+        log.info("Successfully updated toAccount balance for toUserId={}, currency={}, amount={}",
+                toUserId, exchangeDto.getToCurrency(), exchangeDto.getToValue());
     }
 
     @Transactional

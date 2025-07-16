@@ -24,10 +24,9 @@ public class ExchangeService {
 
     public Double exchange(ExchangeDto exchangeDto) {
         log.info("Exchange {}", exchangeDto);
+        Double toValue = convertValue(exchangeDto.getFromCurrency(), exchangeDto.getToCurrency(), exchangeDto.getFromValue());
+        exchangeDto.setToValue(toValue);
         ExchangeEntity exchangeEntity = exchangeEntityMapper.map(exchangeDto);
-        exchangeEntity.setFromValue(exchangeDto.getValue());
-        Double toValue = convertValue(exchangeDto.getFromCurrency(), exchangeDto.getToCurrency(), exchangeDto.getValue());
-        exchangeEntity.setToValue(toValue);
         exchangeEntity = exchangeRepository.save(exchangeEntity);
         log.info("Exchange saved: {}", exchangeEntity);
         return toValue;

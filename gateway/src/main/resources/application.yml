@@ -12,6 +12,10 @@ spring:
               - uri: http://127.0.0.1:8010 # TODO: Заменить на переменную окружения
             bankapp-exchange-generator:
               - uri: http://127.0.0.1:8020 # TODO: Заменить на переменную окружения
+            bankapp-exchange:
+              - uri: http://127.0.0.1:8030 # TODO: Заменить на переменную окружения
+            bankapp-transfer:
+              - uri: http://127.0.0.1:8040 # TODO: Заменить на переменную окружения
     gateway:
       mvc:
         routes:
@@ -26,4 +30,16 @@ spring:
             predicates:
               - Path=/exchange-generator/** # URI поступающего в гейтвей запроса, которому матчится роут
             filters:
-              - RewritePath=/exchange-generator/?(?<segment>.*), /$\{segment} # фильтр, модифицирующий запрос к целевому сервису
+              - RewritePath=/exchange-generator/?(?<segment>.*), /$\{segment}
+          - id: exchange-route  # ID роута
+            uri: lb://bankapp-exchange  # URI микросервиса, на который следует перенаправлять запрос
+            predicates:
+              - Path=/exchange/** # URI поступающего в гейтвей запроса, которому матчится роут
+            filters:
+              - RewritePath=/exchange/?(?<segment>.*), /$\{segment}
+          - id: transfer-route  # ID роута
+            uri: lb://bankapp-transfer  # URI микросервиса, на который следует перенаправлять запрос
+            predicates:
+              - Path=/transfer/** # URI поступающего в гейтвей запроса, которому матчится роут
+            filters:
+              - RewritePath=/transfer/?(?<segment>.*), /$\{segment}

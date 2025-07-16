@@ -8,7 +8,9 @@ public class ExchangeDto {
     private Long id;
     private String login;
     private String fromCurrency;
-    private String toCurrency;
-    private Double value;
+    private Double fromValue;
     private String toLogin;
+    private String toCurrency;
+    private Double toValue;
+
 }

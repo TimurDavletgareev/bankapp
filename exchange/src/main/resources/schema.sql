@@ -1,6 +1,7 @@
-CREATE SCHEMA exchange_schema;
+drop SCHEMA if exists exchange_schema cascade;
 
-drop table if exists exchange_schema.exchange cascade;
+
+CREATE SCHEMA exchange_schema;
 
 CREATE TABLE IF NOT EXISTS exchange_schema.exchange
 (
