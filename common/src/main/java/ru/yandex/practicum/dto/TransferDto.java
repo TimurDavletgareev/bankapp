@@ -1,9 +1,11 @@
 package ru.yandex.practicum.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class ExchangeDto {
+@Builder
+public class TransferDto {
 
     private Long id;
     private String login;

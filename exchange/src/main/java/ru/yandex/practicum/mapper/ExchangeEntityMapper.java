@@ -1,18 +1,22 @@
 package ru.yandex.practicum.mapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.dto.ExchangeDto;
+import ru.yandex.practicum.dto.TransferDto;
 import ru.yandex.practicum.entity.ExchangeEntity;
 
 @Component
 @RequiredArgsConstructor
 public class ExchangeEntityMapper {
 
-    private final ObjectMapper objectMapper;
-
-    public ExchangeEntity map(ExchangeDto exchangeDto) {
-        return objectMapper.convertValue(exchangeDto, ExchangeEntity.class);
+    public ExchangeEntity map(TransferDto transferDto) {
+        ExchangeEntity exchangeEntity = new ExchangeEntity();
+        exchangeEntity.setLogin(transferDto.getLogin());
+        exchangeEntity.setFromCurrency(transferDto.getFromCurrency());
+        exchangeEntity.setFromValue(transferDto.getFromValue());
+        exchangeEntity.setToCurrency(transferDto.getToCurrency());
+        exchangeEntity.setToValue(transferDto.getToValue());
+        exchangeEntity.setToLogin(transferDto.getToLogin());
+        return exchangeEntity;
     }
 }

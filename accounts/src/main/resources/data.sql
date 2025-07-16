@@ -7,7 +7,7 @@ values ('user1@email.net',
 
 insert into accounts(user_id, value, currency_name, is_exists)
 values (1,
-        0.0,
+        100000.0,
         'RUB',
         true);
 

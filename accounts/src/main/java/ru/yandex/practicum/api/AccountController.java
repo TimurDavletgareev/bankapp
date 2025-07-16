@@ -3,7 +3,7 @@ package ru.yandex.practicum.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.dto.ExchangeDto;
+import ru.yandex.practicum.dto.TransferDto;
 import ru.yandex.practicum.service.AccountService;
 import ru.yandex.practicum.service.UserService;
 
@@ -23,11 +23,11 @@ public class AccountController {
     }
 
     @PostMapping("/update-balance")
-    public void updateBalance(@RequestBody ExchangeDto exchangeDto) {
+    public void updateBalance(@RequestBody TransferDto transferDto) {
         accountService.updateBalance(
-                getUserId(exchangeDto.getLogin()),
-                getUserId(exchangeDto.getToLogin()),
-                exchangeDto
+                getUserId(transferDto.getLogin()),
+                getUserId(transferDto.getToLogin()),
+                transferDto
         );
     }
 

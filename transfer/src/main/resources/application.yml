@@ -14,7 +14,7 @@ spring:
           keycloak:
             issuer-uri: ${KEYCLOAK_ISSUER_URI}
         registration:
-          bankapp-exchange:
+          bankapp-transfer:
             provider: keycloak
             authorizationGrantType: client_credentials
             client-id: bankapp-transfer

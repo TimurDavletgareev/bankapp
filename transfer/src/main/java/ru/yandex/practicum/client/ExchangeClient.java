@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.dto.ExchangeDto;
+import ru.yandex.practicum.dto.TransferDto;
 import ru.yandex.practicum.service.ClientService;
 
 @Service
@@ -17,8 +17,8 @@ public class ExchangeClient {
     @Value("${resource.alias.exchange}")
     private String resourceAlias;
 
-    public Double getToValue(ExchangeDto exchangeDto) {
+    public Double getToValue(TransferDto transferDto) {
         String endpoint = "/exchange";
-        return clientService.postWithBody(resourceAlias, endpoint, exchangeDto, Double.class);
+        return clientService.postWithBody(resourceAlias, endpoint, transferDto, Double.class);
     }
 }

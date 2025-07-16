@@ -39,4 +39,15 @@ public class ClientService {
                 .retrieve()
                 .body(type);
     }
+
+    public <T> T postWithBody(String resourceAlias, String endpoint, Object body, Class<T> returnType) {
+        String accessToken = tokenService.get();
+        endpoint = gateway + resourceAlias + endpoint;
+        return restClient.post()
+                .uri(endpoint)
+                .header("Authorization", "Bearer " + accessToken)
+                .body(body)
+                .retrieve()
+                .body(returnType);
+    }
 }

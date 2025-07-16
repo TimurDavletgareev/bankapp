@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TokenService {
 
-    @Value("${spring.security.oauth2.client.registration.bankapp-exchange.client-id}")
+    @Value("${spring.security.oauth2.client.registration.bankapp-transfer.client-id}")
     private String client_id;
 
     private final OAuth2AuthorizedClientManager authorizedClientManager;

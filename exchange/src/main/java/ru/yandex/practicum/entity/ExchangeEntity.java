@@ -1,19 +1,17 @@
 package ru.yandex.practicum.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "exchange")
+@Table(schema = "exchange_schema", name = "exchange")
 @Getter
 @Setter
 @ToString
 public class ExchangeEntity {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
 
