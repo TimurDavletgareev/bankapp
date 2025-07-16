@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: bankapp-exchange-generator
+  config:
+    import: configserver:http://127.0.0.1:8888
   security:
     oauth2:
       resourceserver:
