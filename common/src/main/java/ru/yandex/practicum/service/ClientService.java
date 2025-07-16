@@ -2,16 +2,12 @@ package ru.yandex.practicum.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-@Service
 @RequiredArgsConstructor
 public class ClientService {
 
-    @Value("${gateway}")
-    private String gateway;
+    private final String gateway;
     private final TokenService tokenService;
     private RestClient restClient;
 

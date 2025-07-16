@@ -1,18 +1,14 @@
 package ru.yandex.practicum.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
 public class TokenService {
 
-    @Value("${spring.security.oauth2.client.registration.bankapp-transfer.client-id}")
-    private String client_id;
+    private final String client_id;
 
     private final OAuth2AuthorizedClientManager authorizedClientManager;
 
