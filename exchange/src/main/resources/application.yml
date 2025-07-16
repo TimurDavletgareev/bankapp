@@ -6,6 +6,11 @@ spring:
   application:
     name: bankapp-exchange
 
+  config:
+    import: configserver:http://127.0.0.1:8888
+  profiles:
+    active: local
+
   sql:
     init:
       mode: always

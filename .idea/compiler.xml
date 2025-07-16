@@ -26,6 +26,7 @@
       <module name="blocker" options="-parameters" />
       <module name="cash" options="-parameters" />
       <module name="common" options="-parameters" />
+      <module name="config-server" options="-parameters" />
       <module name="exchange" options="-parameters" />
       <module name="exchange-generator" options="-parameters" />
       <module name="front-ui" options="-parameters" />
