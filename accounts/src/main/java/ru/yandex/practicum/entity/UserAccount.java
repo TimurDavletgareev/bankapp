@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
-@Table(name = "user_accounts")
+@Table(schema = "accounts_schema", name = "user_accounts")
 @Getter
 @Setter
 @ToString

@@ -1,6 +1,5 @@
 drop SCHEMA if exists exchange_schema cascade;
 
-
 CREATE SCHEMA exchange_schema;
 
 CREATE TABLE IF NOT EXISTS exchange_schema.exchange

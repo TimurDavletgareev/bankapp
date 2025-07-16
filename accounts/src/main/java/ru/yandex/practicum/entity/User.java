@@ -10,7 +10,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "users")
+@Table(schema = "accounts_schema", name = "users")
 @Getter
 @Setter
 @ToString
