@@ -5,7 +5,19 @@ spring:
     name: bankapp-gateway
   config:
     import: configserver:http://127.0.0.1:8888
-
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            bankapp-accounts:
+              - uri: ${ACCOUNTS_URI}
+            bankapp-exchange-generator:
+              - uri: ${EXCHANGE_GENERATOR_URI}
+            bankapp-exchange:
+              - uri: ${EXCHANGE_URI}
+            bankapp-transfer:
+              - uri: ${TRANSFER_URI}
     gateway:
       mvc:
         routes:
