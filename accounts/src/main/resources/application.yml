@@ -7,7 +7,7 @@ spring:
     name: bankapp-accounts
 
   config:
-    import: configserver:http://127.0.0.1:8888
+    import: configserver:${CONFIG_SERVER}
 
   sql:
     init:
