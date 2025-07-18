@@ -16,3 +16,4 @@ Spring-приложение онлайн банкинг
 7) Выполнить mvn clean package
 8) Выполнить docker compose up
 9) Приложение будет доступно на http://localhost:8080
+10) Вход по логинам "user1@email.net" и "user2@email.net", пароли "123"
