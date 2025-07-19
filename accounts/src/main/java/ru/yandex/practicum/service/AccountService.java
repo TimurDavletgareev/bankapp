@@ -44,7 +44,7 @@ public class AccountService {
                 .map(account -> Currency.valueOf(account.getCurrencyName()))
                 .toList();
         List<Currency> newListOfUserCurrencies = new ArrayList<>();
-        if (accountsString != null && !accountsString.isBlank()) {
+        if (accountsString != null && !accountsString.isBlank() && !accountsString.equalsIgnoreCase("null")) {
             newListOfUserCurrencies = Arrays.stream(accountsString.split(","))
                     .map(Currency::valueOf)
                     .toList();

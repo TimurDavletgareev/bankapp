@@ -74,6 +74,18 @@ services:
     environment:
       - CONFIG_SERVER=http://host.docker.internal:8888
 
+  cash:
+    build: ./cash
+    container_name: cash_container
+    ports:
+      - "8050:8050"
+    depends_on:
+      - db
+      - config-server
+    restart: on-failure
+    environment:
+      - CONFIG_SERVER=http://host.docker.internal:8888
+
   front-ui:
     build: ./front-ui
     container_name: front-ui_container
