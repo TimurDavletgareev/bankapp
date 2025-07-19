@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.AccountDto;
+import ru.yandex.practicum.dto.CashDto;
 import ru.yandex.practicum.dto.TransferDto;
 import ru.yandex.practicum.entity.Account;
 import ru.yandex.practicum.error.exception.IncorrectRequestException;
 import ru.yandex.practicum.mapper.AccountMapper;
+import ru.yandex.practicum.model.CashOperation;
 import ru.yandex.practicum.model.Currency;
 import ru.yandex.practicum.repository.AccountRepository;
 
@@ -114,6 +116,25 @@ public class AccountService {
         accountRepository.save(toAccount);
         log.info("Successfully updated toAccount balance for toUserId={}, currency={}, new balance={}",
                 toUserId, transferDto.getToCurrency(), newBalance);
+    }
+
+    @Transactional
+    public void cash(Long userId, CashDto cashDto) {
+        log.info("cash account: {}", cashDto);
+        Account account = accountRepository.findByUserIdAndCurrencyName(userId, cashDto.getCurrency());
+        if (account == null || !account.isExists()) {
+            throw new IncorrectRequestException("Account not found");
+        }
+        if (cashDto.getAction().equals(CashOperation.GET)) {
+            if (account.getValue() < cashDto.getValue()) {
+                throw new IncorrectRequestException("Not enough balance");
+            }
+            account.setValue(account.getValue() - cashDto.getValue());
+        } else if (cashDto.getAction().equals(CashOperation.PUT)) {
+            account.setValue(account.getValue() + cashDto.getValue());
+        }
+        account = accountRepository.save(account);
+        log.info("Successfully cash account: {}", account);
     }
 
     @Transactional

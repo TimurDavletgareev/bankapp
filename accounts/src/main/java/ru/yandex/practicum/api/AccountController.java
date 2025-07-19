@@ -3,6 +3,7 @@ package ru.yandex.practicum.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.dto.CashDto;
 import ru.yandex.practicum.dto.TransferDto;
 import ru.yandex.practicum.service.AccountService;
 import ru.yandex.practicum.service.UserService;
@@ -29,6 +30,11 @@ public class AccountController {
                 getUserId(transferDto.getToLogin()),
                 transferDto
         );
+    }
+
+    @PostMapping("/cash")
+    public void cash(@RequestBody CashDto cashDto) {
+        accountService.cash(getUserId(cashDto.getLogin()), cashDto);
     }
 
     private Long getUserId(String email) {

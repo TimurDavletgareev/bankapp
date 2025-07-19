@@ -18,6 +18,8 @@ spring:
               - uri: ${EXCHANGE_URI}
             bankapp-transfer:
               - uri: ${TRANSFER_URI}
+            bankapp-cash:
+              - uri: ${CASH_URI}
     gateway:
       mvc:
         routes:
@@ -45,3 +47,9 @@ spring:
               - Path=/transfer/** # URI поступающего в гейтвей запроса, которому матчится роут
             filters:
               - RewritePath=/transfer/?(?<segment>.*), /$\{segment}
+          - id: cash-route  # ID роута
+            uri: lb://bankapp-cash  # URI микросервиса, на который следует перенаправлять запрос
+            predicates:
+              - Path=/cash/** # URI поступающего в гейтвей запроса, которому матчится роут
+            filters:
+              - RewritePath=/cash/?(?<segment>.*), /$\{segment}
