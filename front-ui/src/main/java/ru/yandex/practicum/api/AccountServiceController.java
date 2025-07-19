@@ -2,6 +2,7 @@ package ru.yandex.practicum.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,10 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.client.AccountClient;
+import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.UserFullDto;
 import ru.yandex.practicum.error.exception.IncorrectRequestException;
 
 import java.security.Principal;
+import java.time.LocalDate;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,6 +23,32 @@ import java.security.Principal;
 public class AccountServiceController {
 
     private final AccountClient accountClient;
+    private final PasswordEncoder passwordEncoder;
+
+    @GetMapping("/signup")
+    public String getSignUp() {
+        return "signup";
+    }
+
+    @PostMapping("/signup")
+    public String signUp(@RequestParam String login,
+                         @RequestParam String password,
+                         @RequestParam String confirm_password,
+                         @RequestParam String name,
+                         @RequestParam String birthdate) {
+        if (!password.equals(confirm_password)) {
+            throw new IncorrectRequestException("Wrong password confirmation");
+        }
+        password = passwordEncoder.encode(password);
+        NewUserDto newUserDto = NewUserDto.builder()
+                .email(login)
+                .password(password)
+                .name(name)
+                .birthDate(LocalDate.parse(birthdate))
+                .build();
+        accountClient.saveUserDto(newUserDto);
+        return "redirect:/main";
+    }
 
     @GetMapping("/main")
     public String getMainPage(Principal principal, Model model) {
@@ -68,18 +97,4 @@ public class AccountServiceController {
         }
         return "redirect:/main";
     }
-
-    /*
-
-    @PostMapping("/save")
-    public UserFullDto addUser(@RequestBody NewUserDto newUserDto) {
-        return userClient.saveUser(newUserDto);
-    }
-
-
-
-    @DeleteMapping("/delete")
-    public boolean deleteUser(Principal principal) {
-        return userClient.deleteUser(principal);
-    }*/
 }

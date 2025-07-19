@@ -37,7 +37,7 @@ public class UserService {
     }
 
     public UserFullDto getUserDtoByEmail(String email) {
-        log.info("get current user");
+        log.info("getUserDtoByEmail: {}", email);
         User user = getUserByEmail(email);
         UserFullDto userFullDto = userMapper.mapToFullDto(user);
         userFullDto.setAccounts(accountService.getByUserId(user.getId()));

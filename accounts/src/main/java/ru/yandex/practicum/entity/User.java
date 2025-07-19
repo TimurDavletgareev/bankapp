@@ -1,10 +1,6 @@
 package ru.yandex.practicum.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -17,6 +13,7 @@ import java.time.LocalDate;
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
 
@@ -32,7 +29,7 @@ public class User {
     @NonNull
     private LocalDate birthDate;
 
-    @JsonIgnore
+    @Column
     @ToString.Exclude
     private String password;
 

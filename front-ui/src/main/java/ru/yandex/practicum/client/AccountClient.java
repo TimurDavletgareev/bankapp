@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dto.AllUsersDto;
 import ru.yandex.practicum.dto.CurrencyDto;
+import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.UserFullDto;
 import ru.yandex.practicum.model.Currency;
 import ru.yandex.practicum.service.ClientService;
@@ -25,6 +26,12 @@ public class AccountClient {
 
     private final ClientService clientService;
     private final PasswordEncoder passwordEncoder;
+
+    public UserFullDto saveUserDto(NewUserDto newUserDto) {
+        log.info("saveUserDto: {}", newUserDto);
+        String endpoint = "/signup/save";
+        return clientService.postWithBody(resourceAlias, endpoint, newUserDto, UserFullDto.class);
+    }
 
     public UserFullDto getCurrentUserDto(String email) {
         log.info("getCurrentUserDto by email{}", email);

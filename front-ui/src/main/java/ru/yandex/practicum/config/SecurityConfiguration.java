@@ -22,13 +22,14 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
         return security
                 .authorizeHttpRequests(requests -> requests
+                        .requestMatchers("/", "/signup").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/signup")
                         .invalidateHttpSession(true) // Удаление сессии при выходе
                         .deleteCookies("JSESSIONID") // Удаление куки сессии
                 )

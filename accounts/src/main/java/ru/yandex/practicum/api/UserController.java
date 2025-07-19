@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.AllUsersDto;
-import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.UserFullDto;
 import ru.yandex.practicum.service.UserService;
 
@@ -24,11 +23,6 @@ public class UserController {
     @GetMapping("/all")
     public AllUsersDto getAllUsers() {
         return userService.getAllUsers();
-    }
-
-    @PostMapping("/save")
-    public UserFullDto addUser(@RequestBody NewUserDto newUserDto) {
-        return userService.saveUser(newUserDto);
     }
 
     @PostMapping("/update")

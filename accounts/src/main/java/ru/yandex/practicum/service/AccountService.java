@@ -76,7 +76,6 @@ public class AccountService {
     public List<AccountDto> createNewUserAccounts(long userId) {
         List<AccountDto> listToReturn = new ArrayList<>();
         for (Currency currency : Currency.values()) {
-            createNewAccount(userId, currency);
             listToReturn.add(accountMapper.map(createNewAccount(userId, currency)));
         }
         return listToReturn;
