@@ -19,11 +19,11 @@ public class CashServiceController {
     private final CashClient cashClient;
 
     @PostMapping("/user/{login}/cash")
-    public String transfer(@PathVariable String login,
-                           @RequestParam String currency,
-                           @RequestParam Double value,
-                           @RequestParam String action,
-                           Principal principal) {
+    public String cash(@PathVariable String login,
+                       @RequestParam String currency,
+                       @RequestParam Double value,
+                       @RequestParam String action,
+                       Principal principal) {
         if (!login.equals(principal.getName())) {
             throw new IncorrectRequestException("Not current user login");
         }

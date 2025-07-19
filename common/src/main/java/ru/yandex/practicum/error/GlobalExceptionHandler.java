@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND) // 404
-    public String  handleNotFoundException(final NotFoundException e, Model model) {
+    public String handleNotFoundException(final NotFoundException e, Model model) {
         log.error(e.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(e.getClass().getName(), e.getMessage());
         model.addAttribute("errorResponse", errorResponse);

@@ -34,7 +34,7 @@ public class AccountClient {
     }
 
     public UserFullDto getCurrentUserDto(String email) {
-        log.info("getCurrentUserDto by email{}", email);
+        log.info("getCurrentUserDto by email: {}", email);
         String endpoint = "/user?email=" + email;
         return clientService.get(resourceAlias, endpoint, UserFullDto.class);
     }
