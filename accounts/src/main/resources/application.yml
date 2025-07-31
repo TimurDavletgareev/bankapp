@@ -4,10 +4,7 @@ server:
 spring:
 
   application:
-    name: bankapp-accounts
-
-  config:
-    import: configserver:${CONFIG_SERVER}
+    name: accounts
 
   sql:
     init:

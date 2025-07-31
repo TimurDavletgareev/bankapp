@@ -4,12 +4,7 @@ server:
 spring:
 
   application:
-    name: bankapp-exchange
-
-  config:
-    import: configserver:${CONFIG_SERVER}
-  profiles:
-    active: local
+    name: exchange
 
   sql:
     init:

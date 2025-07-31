@@ -3,9 +3,7 @@ server:
 
 spring:
   application:
-    name: bankapp-exchange-generator
-  config:
-    import: configserver:${CONFIG_SERVER}
+    name: exchange-generator
   security:
     oauth2:
       resourceserver:
