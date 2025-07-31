@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres:15
+    container_name: db_container
+    environment:
+      - POSTGRES_DB=test-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=iamroot
+
+  config-server:
+    build: ./config-server
+    container_name: config-server_container
+    ports:
+      - "8888:8888"
+
+  gateway:
+    build: ./gateway
+    container_name: gateway_container
+    ports:
+      - "8000:8000"
+    depends_on:
+      - config-server
+    restart: on-failure
+    environment:
+      - CONFIG_SERVER=http://host.docker.internal:8888
+
+  accounts:
+    build: ./accounts
+    container_name: accounts_container
+    ports:
+      - "8010:8010"
+    depends_on:
+      - db
+      - config-server
+    restart: on-failure
+    environment:
+      - CONFIG_SERVER=http://host.docker.internal:8888
+
+  exchange-generator:
+    build: ./exchange-generator
+    container_name: exchange-generator_container
+    ports:
+      - "8020:8020"
+    depends_on:
+      - config-server
+    restart: on-failure
+    environment:
+      - CONFIG_SERVER=http://host.docker.internal:8888
+
+  exchange:
+    build: ./exchange
+    container_name: exchange_container
+    ports:
+      - "8030:8030"
+    depends_on:
+      - db
+      - config-server
+    restart: on-failure
+    environment:
+      - CONFIG_SERVER=http://host.docker.internal:8888
+
+  transfer:
+    build: ./transfer
+    container_name: transfer_container
+    ports:
+      - "8040:8040"
+    depends_on:
+      - config-server
+    restart: on-failure
+    environment:
+      - CONFIG_SERVER=http://host.docker.internal:8888
+
+  cash:
+    build: ./cash
+    container_name: cash_container
+    ports:
+      - "8050:8050"
+    depends_on:
+      - config-server
+    restart: on-failure
+    environment:
+      - CONFIG_SERVER=http://host.docker.internal:8888
+
+  front-ui:
+    build: ./front-ui
+    container_name: front-ui_container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - config-server
+    restart: on-failure
+    environment:
+      - CONFIG_SERVER=http://host.docker.internal:8888

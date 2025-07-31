@@ -1,0 +1,26 @@
+server:
+  port: 8010
+
+spring:
+
+  application:
+    name: bankapp-accounts
+
+  config:
+    import: configserver:${CONFIG_SERVER}
+
+  sql:
+    init:
+      mode: always
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER_URI}
+
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}

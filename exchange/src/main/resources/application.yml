@@ -1,0 +1,46 @@
+server:
+  port: 8030
+
+spring:
+
+  application:
+    name: bankapp-exchange
+
+  config:
+    import: configserver:${CONFIG_SERVER}
+  profiles:
+    active: local
+
+  sql:
+    init:
+      mode: always
+
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER_URI}
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${KEYCLOAK_ISSUER_URI}
+        registration:
+          bankapp-exchange:
+            provider: keycloak
+            authorizationGrantType: client_credentials
+            client-id: bankapp-exchange
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            scope: profile
+            clientAuthenticationMethod: client_secret_post
+
+gateway: ${GATEWAY_URL}
+
+resource:
+  alias:
+    exchange-generator: /exchange-generator
