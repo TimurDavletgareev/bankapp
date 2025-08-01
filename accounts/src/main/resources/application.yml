@@ -10,12 +10,6 @@ spring:
     init:
       mode: always
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${JWT_ISSUER_URI}
-
   datasource:
     driverClassName: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL}
