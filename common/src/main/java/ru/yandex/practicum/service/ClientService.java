@@ -2,8 +2,10 @@ package ru.yandex.practicum.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.RestClient;
 
+@Slf4j
 @RequiredArgsConstructor
 public class ClientService {
 
@@ -17,6 +19,7 @@ public class ClientService {
 
     public <T> T get(String resourceAlias, String endpoint, Class<T> returnType) {
         endpoint = gateway + resourceAlias + endpoint;
+        log.info("Getting {}", endpoint);
         return restClient.get()
                 .uri(endpoint)
                 .retrieve()
@@ -24,7 +27,8 @@ public class ClientService {
     }
 
     public <T> T post(String resourceAlias, String endpoint, Class<T> type) {
-        endpoint = gateway + resourceAlias + endpoint; //gateway + resourceAlias + endpoint;
+        endpoint = gateway + resourceAlias + endpoint;
+        log.info("Posting {}", endpoint);
         return restClient.post()
                 .uri(endpoint)
                 .retrieve()
@@ -33,6 +37,7 @@ public class ClientService {
 
     public <T> T postWithBody(String resourceAlias, String endpoint, Object body, Class<T> returnType) {
         endpoint = gateway + resourceAlias + endpoint;
+        log.info("Posting with body {}", endpoint);
         return restClient.post()
                 .uri(endpoint)
                 .body(body)
