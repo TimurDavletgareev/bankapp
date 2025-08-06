@@ -16,6 +16,11 @@ dependencies:
     version: "0.1.0"
     repository: "file://./charts/front"  # Local path reference
 
+  # Subchart for front Service
+  - name: exchange-generator
+    version: "0.1.0"
+    repository: "file://./charts/exchange-generator"  # Local path reference
+
  # Dependency for accounts DB (e.g., PostgreSQL)
   - name: postgresql
     version: "14.2.3" # Using a specific known stable version from Bitnami history

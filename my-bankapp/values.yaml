@@ -54,6 +54,28 @@ front:
   config:
     GATEWAY_URL: "http://"
 
+# Configuration for the front subchart
+# NOTE: Build image locally: `docker build -t front:latest in front dir
+exchange-generator:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: exchange-generator # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8020 # Different port for front service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: exchange-generator
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
 # Configuration for the accounts-db (PostgreSQL dependency)
 # Values here are prefixed according to the Bitnami PostgreSQL chart's structure
 # Check the Bitnami chart's values.yaml for all available options
