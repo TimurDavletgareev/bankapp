@@ -6,3 +6,5 @@ metadata:
     {{- include "front.labels" . | nindent 4 }}
 data:
   GATEWAY_URL: "http://"
+  KEYCLOAK_ISSUER_URI: {{ .Values.config.KEYCLOAK_ISSUER_URI | quote }}
+  KEYCLOAK_CLIENT_SECRET: {{ .Values.config.KEYCLOAK_ISSUER_URI | quote }}

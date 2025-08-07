@@ -80,3 +80,5 @@ affinity: {}
 
 config:
   GATEWAY_URL: "http://"
+  KEYCLOAK_ISSUER_URI: ""
+  KEYCLOAK_CLIENT_SECRET: ""

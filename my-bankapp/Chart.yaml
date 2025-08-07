@@ -27,3 +27,8 @@ dependencies:
     repository: "https://charts.bitnami.com/bitnami"
     alias: accounts-db # Alias to distinguish this instance
     condition: accounts-db.enabled # Allow disabling if needed
+
+  - name: keycloak
+    version: 24.8.1
+    repository: https://charts.bitnami.com/bitnami
+    alias: bank-keycloak
