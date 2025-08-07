@@ -3,10 +3,7 @@ server:
 
 spring:
   application:
-    name: bankapp-front
-
-  config:
-    import: configserver:${CONFIG_SERVER}
+    name: front
 
   security:
     oauth2:
@@ -27,7 +24,18 @@ gateway: ${GATEWAY_URL}
 
 resource:
   alias:
-    accounts: /accounts
-    exchange-generator: /exchange-generator
-    transfer: /transfer
-    cash: /cash
+    accounts: bankapp-accounts:8010
+    exchange-generator: bankapp-exchange-generator:8020
+    transfer: transfer
+    cash: cash
+
+# Spring Boot Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true

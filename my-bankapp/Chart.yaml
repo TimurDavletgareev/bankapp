@@ -1,0 +1,34 @@
+apiVersion: v2
+name: my-bankapp
+description: Umbrella chart for accounts and front microservices
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  # Subchart for accounts Service
+  - name: accounts
+    version: "0.1.0"
+    repository: "file://./charts/accounts" # Local path reference
+
+  # Subchart for front Service
+  - name: front
+    version: "0.1.0"
+    repository: "file://./charts/front"  # Local path reference
+
+  # Subchart for front Service
+  - name: exchange-generator
+    version: "0.1.0"
+    repository: "file://./charts/exchange-generator"  # Local path reference
+
+ # Dependency for accounts DB (e.g., PostgreSQL)
+  - name: postgresql
+    version: "14.2.3" # Using a specific known stable version from Bitnami history
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: accounts-db # Alias to distinguish this instance
+    condition: accounts-db.enabled # Allow disabling if needed
+
+  - name: keycloak
+    version: 24.8.1
+    repository: https://charts.bitnami.com/bitnami
+    alias: bank-keycloak

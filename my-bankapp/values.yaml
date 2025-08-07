@@ -1,0 +1,129 @@
+global:
+  database:
+    host: "{{ .Release.Name }}-accounts-db"
+    name: "accountsdb"
+    username: "accounts_user
+
+# Configuration for the accounts subchart
+# NOTE: For local development (Minikube/Kind/Docker Desktop), build the image locally
+# (e.g., `docker build -t accounts:latest in accounts dir)
+# and ensure your K8s cluster can access local images (e.g., `minikube docker-env` or `kind load docker-image ...`).
+accounts:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: accounts # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8010
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+    hosts:
+      - host: accounts # Use global domain or specific
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  # Database connection details passed to accounts configmap
+  config:
+    # --- CORRECTED DB URL --- Using '<ReleaseName>-<Alias>' service name convention
+    database_url: "jdbc:postgresql://{{ .Values.global.database.host | default \"localhost\" }}:5432/{{ .Values.global.database.name | default \"accountsdb\" }}"
+    # Secret reference for password is more secure
+    database_username: "{{ .Values.global.database.username | default \"accounts_user\" }}"
+    # database_password_secret: "{{ .Release.Name }}-accounts-db-postgresql" # Reference to secret created by DB chart
+    # database_password_secret_key: "postgresql-password" # Key within the secret
+    jwt_issuer_uri: "http://host.docker.internal:8085/realms/master"
+
+# Configuration for the front subchart
+# NOTE: Build image locally: `docker build -t front:latest in front dir
+front:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: front # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8080 # Different port for front service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: front
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  config:
+    GATEWAY_URL: "http://"
+    KEYCLOAK_ISSUER_URI: "http://localhost:8085/realms/master"
+    KEYCLOAK_CLIENT_SECRET: "d3qytkUb62j7F85l85YZ9c96exiPljQr"
+
+# Configuration for the front subchart
+# NOTE: Build image locally: `docker build -t front:latest in front dir
+exchange-generator:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: exchange-generator # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8020 # Different port for front service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: exchange-generator
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+# Configuration for the accounts-db (PostgreSQL dependency)
+# Values here are prefixed according to the Bitnami PostgreSQL chart's structure
+# Check the Bitnami chart's values.yaml for all available options
+accounts-db:
+  enabled: true
+  # Override values from the official postgresql chart
+  auth:
+    database: accountsdb
+    username: accounts_user
+    # Use existingSecret or provide password (less secure for production)
+    # existingSecret: "{{ .Release.Name }}-accounts-db-postgresql" # Name of the secret to use/create
+    password: "changeM3accounts!" # Example: Not recommended for production
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi # Small size for example
+
+bank-keycloak:
+  auth:
+    adminUser: admin
+    adminPassword: admin
+  postgresql:
+    enabled: true
+    auth:
+      username: hn_keycloak
+      password: bn_Kkeycloak
+      database: bitnami_keycloak
+  extraEnvVars:
+    - name: KEYCLOAK_ADMIN
+      value: admin
+    - name: KEYCLOAK_ADMIN_PASSWORD
+      value: admin
+    - name: KEYCLOAK_EXTRA_ARGS
+      value: "--import-realm"
+  extraVolumes:
+    - name: realm-config
+      configMap:
+        name: keycloak-realm-config
+  extraVolumeMounts:
+    - name: realm-config
+      mountPath: /opt/bitnami/keycloak/data/import
+      readOnly: true

@@ -2,53 +2,51 @@ server:
   port: 8000
 spring:
   application:
-    name: bankapp-gateway
-  config:
-    import: configserver:${CONFIG_SERVER}
+    name: gateway
   cloud:
     discovery:
       client:
         simple:
           instances:
-            bankapp-accounts:
+            accounts:
               - uri: ${ACCOUNTS_URI}
-            bankapp-exchange-generator:
+            exchange-generator:
               - uri: ${EXCHANGE_GENERATOR_URI}
-            bankapp-exchange:
+            exchange:
               - uri: ${EXCHANGE_URI}
-            bankapp-transfer:
+            transfer:
               - uri: ${TRANSFER_URI}
-            bankapp-cash:
+            cash:
               - uri: ${CASH_URI}
     gateway:
       mvc:
         routes:
           - id: accounts-route  # ID роута
-            uri: lb://bankapp-accounts  # URI микросервиса, на который следует перенаправлять запрос
+            uri: lb://accounts  # URI микросервиса, на который следует перенаправлять запрос
             predicates:
               - Path=/accounts/** # URI поступающего в гейтвей запроса, которому матчится роут
             filters:
               - RewritePath=/accounts/?(?<segment>.*), /$\{segment} # фильтр, модифицирующий запрос к целевому сервису (убирается имя сервиса в начале)
           - id: exchange-generator-route  # ID роута
-            uri: lb://bankapp-exchange-generator  # URI микросервиса, на который следует перенаправлять запрос
+            uri: lb://exchange-generator  # URI микросервиса, на который следует перенаправлять запрос
             predicates:
               - Path=/exchange-generator/** # URI поступающего в гейтвей запроса, которому матчится роут
             filters:
               - RewritePath=/exchange-generator/?(?<segment>.*), /$\{segment}
           - id: exchange-route  # ID роута
-            uri: lb://bankapp-exchange  # URI микросервиса, на который следует перенаправлять запрос
+            uri: lb://exchange  # URI микросервиса, на который следует перенаправлять запрос
             predicates:
               - Path=/exchange/** # URI поступающего в гейтвей запроса, которому матчится роут
             filters:
               - RewritePath=/exchange/?(?<segment>.*), /$\{segment}
           - id: transfer-route  # ID роута
-            uri: lb://bankapp-transfer  # URI микросервиса, на который следует перенаправлять запрос
+            uri: lb://transfer  # URI микросервиса, на который следует перенаправлять запрос
             predicates:
               - Path=/transfer/** # URI поступающего в гейтвей запроса, которому матчится роут
             filters:
               - RewritePath=/transfer/?(?<segment>.*), /$\{segment}
           - id: cash-route  # ID роута
-            uri: lb://bankapp-cash  # URI микросервиса, на который следует перенаправлять запрос
+            uri: lb://cash  # URI микросервиса, на который следует перенаправлять запрос
             predicates:
               - Path=/cash/** # URI поступающего в гейтвей запроса, которому матчится роут
             filters:
