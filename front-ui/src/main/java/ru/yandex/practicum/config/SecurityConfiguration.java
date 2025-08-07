@@ -37,6 +37,22 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    public OAuth2AuthorizedClientManager authorizedClientManager(
+            ClientRegistrationRepository clientRegistrationRepository,
+            OAuth2AuthorizedClientService authorizedClientService
+    ) {
+        AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
+                new AuthorizedClientServiceOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientService);
+
+        manager.setAuthorizedClientProvider(OAuth2AuthorizedClientProviderBuilder.builder()
+                .clientCredentials() // Включаем получение токена с помощью client_credentials
+                .refreshToken() // Также включаем использование refresh_token
+                .build());
+
+        return manager;
+    }
+
+    @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

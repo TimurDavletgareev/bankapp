@@ -10,6 +10,7 @@ import org.springframework.web.client.RestClient;
 public class ClientService {
 
     private final String gateway;
+    private final TokenService tokenService;
     private RestClient restClient;
 
     @PostConstruct
@@ -18,28 +19,34 @@ public class ClientService {
     }
 
     public <T> T get(String resourceAlias, String endpoint, Class<T> returnType) {
+        String accessToken = tokenService.get();
         endpoint = gateway + resourceAlias + endpoint;
         log.info("Getting {}", endpoint);
         return restClient.get()
                 .uri(endpoint)
+                .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .body(returnType);
     }
 
     public <T> T post(String resourceAlias, String endpoint, Class<T> type) {
-        endpoint = gateway + resourceAlias + endpoint;
         log.info("Posting {}", endpoint);
+        String accessToken = tokenService.get();
+        endpoint = gateway + resourceAlias + endpoint; //gateway + resourceAlias + endpoint;
         return restClient.post()
                 .uri(endpoint)
+                .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .body(type);
     }
 
     public <T> T postWithBody(String resourceAlias, String endpoint, Object body, Class<T> returnType) {
+        String accessToken = tokenService.get();
         endpoint = gateway + resourceAlias + endpoint;
         log.info("Posting with body {}", endpoint);
         return restClient.post()
                 .uri(endpoint)
+                .header("Authorization", "Bearer " + accessToken)
                 .body(body)
                 .retrieve()
                 .body(returnType);
