@@ -3,9 +3,7 @@ server:
 
 spring:
   application:
-    name: bankapp-cash
-  config:
-    import: configserver:${CONFIG_SERVER}
+    name: cash
   security:
     oauth2:
       resourceserver:

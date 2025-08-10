@@ -3,9 +3,7 @@ server:
 
 spring:
   application:
-    name: bankapp-transfer
-  config:
-    import: configserver:${CONFIG_SERVER}
+    name: transfer
   security:
     oauth2:
       resourceserver:
