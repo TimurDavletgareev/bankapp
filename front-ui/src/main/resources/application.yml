@@ -24,10 +24,11 @@ gateway: ${GATEWAY_URL}
 
 resource:
   alias:
-    accounts: bankapp-accounts:8010
-    exchange-generator: bankapp-exchange-generator:8020
-    transfer: transfer
-    cash: cash
+    accounts: ${ACCOUNTS_ALIAS}
+    exchange-generator: ${EXCHANGE_GENERATOR_ALIAS}
+    transfer: ${TRANSFER_ALIAS}
+    cash: ${CASH_ALIAS}
+    notification: ${NOTIFICATION_ALIAS}
 
 # Spring Boot Actuator endpoints
 management:

@@ -20,7 +20,7 @@
         <module>exchange</module>
         <module>exchange-generator</module>
         <module>blocker</module>
-        <module>notifications</module>
+        <module>notification</module>
 		<module>common</module>
 		<module>gateway</module>
     </modules>

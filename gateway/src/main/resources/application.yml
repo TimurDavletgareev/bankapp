@@ -18,6 +18,8 @@ spring:
               - uri: ${TRANSFER_URI}
             cash:
               - uri: ${CASH_URI}
+            notification:
+              - uri: ${NOTIFICATION_URI}
     gateway:
       mvc:
         routes:
@@ -51,3 +53,9 @@ spring:
               - Path=/cash/** # URI поступающего в гейтвей запроса, которому матчится роут
             filters:
               - RewritePath=/cash/?(?<segment>.*), /$\{segment}
+          - id: notification-route  # ID роута
+            uri: lb://notification  # URI микросервиса, на который следует перенаправлять запрос
+            predicates:
+              - Path=/notification/** # URI поступающего в гейтвей запроса, которому матчится роут
+            filters:
+              - RewritePath=/notification/?(?<segment>.*), /$\{segment}
