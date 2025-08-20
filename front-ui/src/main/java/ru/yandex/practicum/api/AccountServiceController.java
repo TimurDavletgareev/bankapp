@@ -14,7 +14,7 @@ import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.NotificationDto;
 import ru.yandex.practicum.dto.UserFullDto;
 import ru.yandex.practicum.error.exception.IncorrectRequestException;
-import ru.yandex.practicum.kafka.NotificationProducer;
+import ru.yandex.practicum.kafka.producer.NotificationProducer;
 
 import java.security.Principal;
 import java.time.LocalDate;

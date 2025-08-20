@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kafka;
+package ru.yandex.practicum.kafka.producer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import ru.yandex.practicum.dto.NotificationDto;
 @RequiredArgsConstructor
 public class NotificationProducer {
 
-    @Value("${topic.notification}")
+    @Value("${topic.notification: notification}")
     private String topic;
 
     private final KafkaTemplate<String, NotificationDto> notificationKafkaTemplate;

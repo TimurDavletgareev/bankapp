@@ -20,7 +20,7 @@ public class NotificationConsumer {
     private final NotificationService notificationService;
 
     @RetryableTopic
-    @KafkaListener(topics = "${topic.notification}")
+    @KafkaListener(topics = "${topic.notification}: notification")
     public void onMessage(@Header(RECEIVED_TOPIC) String receivedTopic,
                           @Payload NotificationDto notificationDto) {
         log.info("Received message from topic '{}': {}", receivedTopic, notificationDto);

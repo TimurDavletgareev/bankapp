@@ -25,19 +25,24 @@ spring:
       bootstrap-servers: ${KAFKA_SERVER} #localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      bootstrap-servers: ${KAFKA_SERVER} #localhost:9092
+      group-id: bankapp-front-consumer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties.spring.json.trusted.packages: ru.yandex.practicum.dto
 
 gateway: ${GATEWAY_URL}
 
 resource:
   alias:
     accounts: ${ACCOUNTS_ALIAS}
-    exchange-generator: ${EXCHANGE_GENERATOR_ALIAS}
     transfer: ${TRANSFER_ALIAS}
     cash: ${CASH_ALIAS}
-    notification: ${NOTIFICATION_ALIAS}
 
 topic:
   notification: notification
+  rates: rates
 
 # Spring Boot Actuator endpoints
 management:
