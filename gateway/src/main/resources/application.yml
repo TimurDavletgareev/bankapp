@@ -10,16 +10,12 @@ spring:
           instances:
             accounts:
               - uri: ${ACCOUNTS_URI}
-            exchange-generator:
-              - uri: ${EXCHANGE_GENERATOR_URI}
             exchange:
               - uri: ${EXCHANGE_URI}
             transfer:
               - uri: ${TRANSFER_URI}
             cash:
               - uri: ${CASH_URI}
-            notification:
-              - uri: ${NOTIFICATION_URI}
     gateway:
       mvc:
         routes:
