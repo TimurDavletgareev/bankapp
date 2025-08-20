@@ -35,6 +35,8 @@ spring:
 topic:
   notification: notification
 
+logging.level.org.apache.kafka.clients: ERROR
+
 # Spring Boot Actuator endpoints
 management:
   endpoints:

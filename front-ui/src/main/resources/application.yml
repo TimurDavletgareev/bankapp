@@ -44,6 +44,8 @@ topic:
   notification: notification
   rates: rates
 
+logging.level.org.apache.kafka.clients.NetworkClient: ERROR
+
 # Spring Boot Actuator endpoints
 management:
   endpoints:

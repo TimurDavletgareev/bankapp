@@ -30,8 +30,4 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties.spring.json.trusted.packages: ru.yandex.practicum.dto
 
-gateway: ${GATEWAY_URL}
-
-resource:
-  alias:
-    exchange-generator: /exchange-generator
+logging.level.org.apache.kafka.clients.NetworkClient: ERROR
