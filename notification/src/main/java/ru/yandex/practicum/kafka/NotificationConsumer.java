@@ -26,8 +26,8 @@ public class NotificationConsumer {
             dltTopicSuffix = "-dlt" // Суффикс для DLT
     )
     @KafkaListener(topics = "${topic.notification}")
-    public void notify(@Header(RECEIVED_TOPIC) String receivedTopic,
-                       @Payload NotificationDto notificationDto) {
+    public void onMessage(@Header(RECEIVED_TOPIC) String receivedTopic,
+                          @Payload NotificationDto notificationDto) {
         log.info("Received message from topic '{}': {}", receivedTopic, notificationDto);
         notificationService.notify(notificationDto);
     }
