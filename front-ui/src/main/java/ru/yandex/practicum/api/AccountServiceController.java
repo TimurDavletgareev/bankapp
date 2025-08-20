@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.client.AccountClient;
-import ru.yandex.practicum.client.NotificationClient;
 import ru.yandex.practicum.dto.NewUserDto;
 import ru.yandex.practicum.dto.NotificationDto;
 import ru.yandex.practicum.dto.UserFullDto;
 import ru.yandex.practicum.error.exception.IncorrectRequestException;
+import ru.yandex.practicum.kafka.NotificationProducer;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -26,7 +26,7 @@ public class AccountServiceController {
 
     private final AccountClient accountClient;
     private final PasswordEncoder passwordEncoder;
-    private final NotificationClient notificationClient;
+    private final NotificationProducer notificationProducer;
 
     @GetMapping("/signup")
     public String getSignUp() {
@@ -104,32 +104,20 @@ public class AccountServiceController {
     private void notifyWrongLogin(String email) {
         String subject = "Not current user login";
         String message = "Login and principal email do not match";
-        notificationClient.notify(NotificationDto.builder()
-                .email(email)
-                .subject(subject)
-                .message(message)
-                .build());
+        notificationProducer.notify(new NotificationDto(email,  subject, message));
         throw new IncorrectRequestException(subject);
     }
 
     private void notifyWrongPassword(String email) {
         String subject = "Wrong password confirmation";
         String message = "Passwords do not match";
-        notificationClient.notify(NotificationDto.builder()
-                .email(email)
-                .subject(subject)
-                .message(message)
-                .build());
+        notificationProducer.notify(new NotificationDto(email,  subject, message));
         throw new IncorrectRequestException(subject);
     }
 
     private void notifyError(String email, String subject) {
         String message = "Something went wrong";
-        notificationClient.notify(NotificationDto.builder()
-                .email(email)
-                .subject(subject)
-                .message(message)
-                .build());
+        notificationProducer.notify(new NotificationDto(email,  subject, message));
         throw new IncorrectRequestException(subject);
     }
 }

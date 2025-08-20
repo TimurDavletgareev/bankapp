@@ -1,10 +1,12 @@
 package ru.yandex.practicum.dto;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NotificationDto {
 
     private String email;

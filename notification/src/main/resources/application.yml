@@ -10,11 +10,13 @@ spring:
     init:
       mode: always
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${JWT_ISSUER_URI}
+  kafka:
+    consumer:
+      bootstrap-servers: ${KAFKA_SERVER} #localhost:9092
+      group-id: bankapp-notification-consumer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties.spring.json.trusted.packages: ru.yandex.practicum.dto
 
   mail:
     host: smtp.gmail.com
@@ -29,6 +31,9 @@ spring:
           required: true
         ssl:
           trust: smtp.gmail.com
+
+topic:
+  notification: notification
 
 # Spring Boot Actuator endpoints
 management:

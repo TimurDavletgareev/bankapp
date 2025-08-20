@@ -20,6 +20,12 @@ spring:
             scope: profile
             clientAuthenticationMethod: client_secret_post
 
+  kafka:
+    producer:
+      bootstrap-servers: ${KAFKA_SERVER} #localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 gateway: ${GATEWAY_URL}
 
 resource:
@@ -29,6 +35,9 @@ resource:
     transfer: ${TRANSFER_ALIAS}
     cash: ${CASH_ALIAS}
     notification: ${NOTIFICATION_ALIAS}
+
+topic:
+  notification: notification
 
 # Spring Boot Actuator endpoints
 management:
