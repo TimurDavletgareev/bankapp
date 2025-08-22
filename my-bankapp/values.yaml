@@ -122,7 +122,7 @@ bank-keycloak:
   extraVolumes:
     - name: realm-config
       configMap:
-        name: keycloak-realm-config
+        name: bankapp-realm-configmap
   extraVolumeMounts:
     - name: realm-config
       mountPath: /opt/bitnami/keycloak/data/import
