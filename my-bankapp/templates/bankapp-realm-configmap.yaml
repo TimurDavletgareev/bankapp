@@ -3,5 +3,5 @@ kind: ConfigMap
 metadata:
   name: bankapp-realm
 data:
-  bankapp-realm.json: |-
-  {{ .Files.Get "files/bankapp-realm.json" | indent 4 }}
+  bankapp-realm.json: |
+{{ .Files.Get "files/bankapp-realm.json" | indent 4 }}

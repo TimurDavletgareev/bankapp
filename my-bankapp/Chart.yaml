@@ -21,6 +21,16 @@ dependencies:
     version: "0.1.0"
     repository: "file://./charts/exchange-generator"  # Local path reference
 
+  # Subchart for accounts Service
+  - name: exchange
+    version: "0.1.0"
+    repository: "file://./charts/exchange" # Local path reference
+
+  # Subchart for accounts Service
+  - name: notification
+    version: "0.1.0"
+    repository: "file://./charts/notification" # Local path reference
+
  # Dependency for accounts DB (e.g., PostgreSQL)
   - name: postgresql
     version: "14.2.3" # Using a specific known stable version from Bitnami history
@@ -28,7 +38,14 @@ dependencies:
     alias: accounts-db # Alias to distinguish this instance
     condition: accounts-db.enabled # Allow disabling if needed
 
+  # Dependency for exchange DB (e.g., PostgreSQL)
+  - name: postgresql
+    version: "14.2.3" # Using a specific known stable version from Bitnami history
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: exchange-db # Alias to distinguish this instance
+    condition: exchange-db.enabled # Allow disabling if needed
+
   - name: keycloak
-    version: 24.8.1
+    version: 21.5.0
     repository: https://charts.bitnami.com/bitnami
     alias: bank-keycloak

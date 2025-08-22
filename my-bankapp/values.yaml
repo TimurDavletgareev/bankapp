@@ -1,9 +1,3 @@
-global:
-  database:
-    host: "{{ .Release.Name }}-accounts-db"
-    name: "accountsdb"
-    username: "accounts_user
-
 # Configuration for the accounts subchart
 # NOTE: For local development (Minikube/Kind/Docker Desktop), build the image locally
 # (e.g., `docker build -t accounts:latest in accounts dir)
@@ -30,9 +24,9 @@ accounts:
   # Database connection details passed to accounts configmap
   config:
     # --- CORRECTED DB URL --- Using '<ReleaseName>-<Alias>' service name convention
-    database_url: "jdbc:postgresql://{{ .Values.global.database.host | default \"localhost\" }}:5432/{{ .Values.global.database.name | default \"accountsdb\" }}"
+    database_url: "jdbc:postgresql://{{ .Release.Name }}-accounts-db:5432/accountsdb"
     # Secret reference for password is more secure
-    database_username: "{{ .Values.global.database.username | default \"accounts_user\" }}"
+    database_username: "accounts_user"
     # database_password_secret: "{{ .Release.Name }}-accounts-db-postgresql" # Reference to secret created by DB chart
     # database_password_secret_key: "postgresql-password" # Key within the secret
     jwt_issuer_uri: "http://host.docker.internal:8085/realms/master"
@@ -85,6 +79,58 @@ exchange-generator:
           - path: /
             pathType: ImplementationSpecific
 
+exchange:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: exchange # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8030
+  ingress:
+    enabled: true
+    className: "nginx" # Specify your ingress controller class
+    hosts:
+      - host: exchange # Use global domain or specific
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  # Database connection details passed to exchange configmap
+  config:
+    # --- CORRECTED DB URL --- Using '<ReleaseName>-<Alias>' service name convention
+    database_url: "jdbc:postgresql://{{ .Release.Name }}-exchange-db:5432/exchangedb"
+    # Secret reference for password is more secure
+    database_username: "exchange_user"
+    # database_password_secret: "{{ .Release.Name }}-exchange-db-postgresql" # Reference to secret created by DB chart
+    # database_password_secret_key: "postgresql-password" # Key within the secret
+    jwt_issuer_uri: "http://host.docker.internal:8085/realms/master"
+    kafka_server: "http://host.docker.internal:9092"
+
+notification:
+  replicaCount: 1
+  image:
+    # --- REVERTED TO LOCAL REPO ---
+    repository: notification # Removed registry prefix
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8060 # Different port for front service
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: notification
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  config:
+    kafka_server: "http://host.docker.internal:9092"
+
 # Configuration for the accounts-db (PostgreSQL dependency)
 # Values here are prefixed according to the Bitnami PostgreSQL chart's structure
 # Check the Bitnami chart's values.yaml for all available options
@@ -97,6 +143,20 @@ accounts-db:
     # Use existingSecret or provide password (less secure for production)
     # existingSecret: "{{ .Release.Name }}-accounts-db-postgresql" # Name of the secret to use/create
     password: "changeM3accounts!" # Example: Not recommended for production
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi # Small size for example
+
+exchange-db:
+  enabled: true
+  # Override values from the official postgresql chart
+  auth:
+    database: exchangedb
+    username: exchange_user
+    # Use existingSecret or provide password (less secure for production)
+    # existingSecret: "{{ .Release.Name }}-exchange-db-postgresql" # Name of the secret to use/create
+    password: "changeM3exchange!" # Example: Not recommended for production
   primary:
     persistence:
       enabled: true
