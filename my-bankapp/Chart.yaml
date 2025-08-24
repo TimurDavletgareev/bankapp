@@ -1,6 +1,6 @@
 apiVersion: v2
 name: my-bankapp
-description: Umbrella chart for accounts and front microservices
+description: Umbrella chart for microservices
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
@@ -48,4 +48,8 @@ dependencies:
   - name: keycloak
     version: 21.5.0
     repository: https://charts.bitnami.com/bitnami
-    alias: bank-keycloak
+
+  - name: kafka
+    version: 29.4.5
+    condition: kafka.enabled
+    repository: https://charts.bitnami.com/bitnami

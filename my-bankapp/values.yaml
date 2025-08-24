@@ -29,7 +29,7 @@ accounts:
     database_username: "accounts_user"
     # database_password_secret: "{{ .Release.Name }}-accounts-db-postgresql" # Reference to secret created by DB chart
     # database_password_secret_key: "postgresql-password" # Key within the secret
-    jwt_issuer_uri: "http://host.docker.internal:8085/realms/master"
+    jwt_issuer_uri: "http://my-bankapp-keycloak:8085/realms/master"
 
 # Configuration for the front subchart
 # NOTE: Build image locally: `docker build -t front:latest in front dir
@@ -54,8 +54,9 @@ front:
             pathType: ImplementationSpecific
   config:
     GATEWAY_URL: "http://"
-    KEYCLOAK_ISSUER_URI: "http://localhost:8085/realms/master"
+    KEYCLOAK_ISSUER_URI: "http://my-bankapp-keycloak:8085/realms/master"
     KEYCLOAK_CLIENT_SECRET: "d3qytkUb62j7F85l85YZ9c96exiPljQr"
+    KAFKA_SERVER: "http://my-bankapp-kafka:9092"
 
 # Configuration for the front subchart
 # NOTE: Build image locally: `docker build -t front:latest in front dir
@@ -78,6 +79,8 @@ exchange-generator:
         paths:
           - path: /
             pathType: ImplementationSpecific
+  config:
+    kafka_server: "http://my-bankapp-kafka:9092"
 
 exchange:
   replicaCount: 1
@@ -106,8 +109,8 @@ exchange:
     database_username: "exchange_user"
     # database_password_secret: "{{ .Release.Name }}-exchange-db-postgresql" # Reference to secret created by DB chart
     # database_password_secret_key: "postgresql-password" # Key within the secret
-    jwt_issuer_uri: "http://host.docker.internal:8085/realms/master"
-    kafka_server: "http://host.docker.internal:9092"
+    jwt_issuer_uri: "http://my-bankapp-kafka:8085/realms/master"
+    kafka_server: "http://my-bankapp-kafka:9092"
 
 notification:
   replicaCount: 1
@@ -129,7 +132,7 @@ notification:
           - path: /
             pathType: ImplementationSpecific
   config:
-    kafka_server: "http://host.docker.internal:9092"
+    kafka_server: "http://my-bankapp-kafka:9092"
 
 # Configuration for the accounts-db (PostgreSQL dependency)
 # Values here are prefixed according to the Bitnami PostgreSQL chart's structure
@@ -162,7 +165,7 @@ exchange-db:
       enabled: true
       size: 1Gi # Small size for example
 
-bank-keycloak:
+keycloak:
   auth:
     adminUser: admin
     adminPassword: admin
@@ -187,3 +190,18 @@ bank-keycloak:
     - name: realm-config
       mountPath: /opt/bitnami/keycloak/data/import
       readOnly: true
+
+kafka:
+  enabled: true
+  controller:
+    replicaCount: 1
+  brokers: 1
+  listeners:
+    client:
+      protocol: PLAINTEXT
+  auth:
+    clientProtocol: PLAINTEXT
+    interBrokerProtocol: PLAINTEXT
+  zookeeper:
+    enabled: true
+    replicaCount: 1
