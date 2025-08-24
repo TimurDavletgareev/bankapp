@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.client.AccountClient;
 import ru.yandex.practicum.dto.NewUserDto;
+import ru.yandex.practicum.dto.NotificationDto;
 import ru.yandex.practicum.dto.UserFullDto;
 import ru.yandex.practicum.error.exception.IncorrectRequestException;
+import ru.yandex.practicum.kafka.producer.NotificationProducer;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -24,6 +26,7 @@ public class AccountServiceController {
 
     private final AccountClient accountClient;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationProducer notificationProducer;
 
     @GetMapping("/signup")
     public String getSignUp() {
@@ -37,7 +40,7 @@ public class AccountServiceController {
                          @RequestParam String name,
                          @RequestParam String birthdate) {
         if (!password.equals(confirm_password)) {
-            throw new IncorrectRequestException("Wrong password confirmation");
+            notifyWrongPassword(login);
         }
         password = passwordEncoder.encode(password);
         NewUserDto newUserDto = NewUserDto.builder()
@@ -69,13 +72,13 @@ public class AccountServiceController {
                                    @RequestParam String confirm_password,
                                    Principal principal) {
         if (!login.equals(principal.getName())) {
-            throw new IncorrectRequestException("Not current user login");
+            notifyWrongLogin(principal.getName());
         }
         if (!password.equals(confirm_password)) {
-            throw new IncorrectRequestException("Wrong password confirmation");
+            notifyWrongPassword(principal.getName());
         }
         if (!accountClient.updateUserPassword(login, password)) {
-            System.out.println("JKSHGSDBJSKDBLKJA passwordChangeError"); //TODO: add to errors list
+            notifyError(principal.getName(), "Password change failed");
         }
         return "redirect:/main";
     }
@@ -87,14 +90,34 @@ public class AccountServiceController {
                              @RequestParam(required = false) String account,
                              Principal principal) {
         if (!login.equals(principal.getName())) {
-            throw new IncorrectRequestException("Not current user login");
+            notifyWrongLogin(principal.getName());
         }
         if (!accountClient.updateUser(login, name, birthdate)) {
-            System.out.println("JKSHGSDBJSKDBLKJA updateUserError"); //TODO: add to errors list
+            notifyError(principal.getName(), "User update failed");
         }
         if (!accountClient.changeAccount(login, account)) {
-            System.out.println("NJVKKLJV changeAccountError"); //TODO: add to errors list
+            notifyError(principal.getName(), "Account change failed");
         }
         return "redirect:/main";
+    }
+
+    private void notifyWrongLogin(String email) {
+        String subject = "Not current user login";
+        String message = "Login and principal email do not match";
+        notificationProducer.notify(new NotificationDto(email,  subject, message));
+        throw new IncorrectRequestException(subject);
+    }
+
+    private void notifyWrongPassword(String email) {
+        String subject = "Wrong password confirmation";
+        String message = "Passwords do not match";
+        notificationProducer.notify(new NotificationDto(email,  subject, message));
+        throw new IncorrectRequestException(subject);
+    }
+
+    private void notifyError(String email, String subject) {
+        String message = "Something went wrong";
+        notificationProducer.notify(new NotificationDto(email,  subject, message));
+        throw new IncorrectRequestException(subject);
     }
 }

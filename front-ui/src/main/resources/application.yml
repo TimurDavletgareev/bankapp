@@ -20,14 +20,31 @@ spring:
             scope: profile
             clientAuthenticationMethod: client_secret_post
 
+  kafka:
+    producer:
+      bootstrap-servers: ${KAFKA_SERVER} #localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      bootstrap-servers: ${KAFKA_SERVER} #localhost:9092
+      group-id: bankapp-front-consumer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties.spring.json.trusted.packages: ru.yandex.practicum.dto
+
 gateway: ${GATEWAY_URL}
 
 resource:
   alias:
-    accounts: bankapp-accounts:8010
-    exchange-generator: bankapp-exchange-generator:8020
-    transfer: transfer
-    cash: cash
+    accounts: ${ACCOUNTS_ALIAS}
+    transfer: ${TRANSFER_ALIAS}
+    cash: ${CASH_ALIAS}
+
+topic:
+  notification: notification
+  rates: rates
+
+logging.level.org.apache.kafka.clients.NetworkClient: ERROR
 
 # Spring Boot Actuator endpoints
 management:

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.client.ExchangeGeneratorClient;
+import ru.yandex.practicum.kafka.consumer.ExchangeGeneratorConsumer;
 import ru.yandex.practicum.model.Rate;
 
 import java.util.List;
@@ -14,10 +14,10 @@ import java.util.List;
 @Slf4j
 public class ExGenServiceController {
 
-    private final ExchangeGeneratorClient exchangeGeneratorClient;
+    private final ExchangeGeneratorConsumer exchangeGeneratorConsumer;
 
     @GetMapping("/api/rates")
     public List<Rate> getRates() {
-        return exchangeGeneratorClient.getRates();
+        return exchangeGeneratorConsumer.getRates();
     }
 }
