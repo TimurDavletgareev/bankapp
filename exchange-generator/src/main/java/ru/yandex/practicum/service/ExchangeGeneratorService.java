@@ -15,7 +15,7 @@ import java.util.random.RandomGenerator;
 public class ExchangeGeneratorService {
 
     public List<Rate> getRates() {
-        log.info("generating rates");
+        log.trace("generating rates");
         List<Rate> rates = new ArrayList<>();
         Arrays.stream(Currency.values())
                 .forEach(currency -> {
@@ -28,7 +28,7 @@ public class ExchangeGeneratorService {
                         RandomGenerator randomGenerator = RandomGenerator.getDefault();
                         rate.setValue(randomGenerator.nextDouble(89, 99));
                     }
-                    log.info("generated rate {}", rate);
+                    log.trace("generated rate {}", rate);
                     rates.add(rate);
                 });
         return rates;
