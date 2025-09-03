@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.web.client.RestClient;
 import ru.yandex.practicum.service.ClientService;
 import ru.yandex.practicum.service.TokenService;
 
@@ -25,8 +26,11 @@ public class ClientConfiguration {
         return new TokenService(client_id, authorizedClientManager);
     }
 
+    @Autowired
+    RestClient.Builder restClientBuilder;
+
     @Bean
     ClientService clientService() {
-        return new ClientService(gateway, tokenService());
+        return new ClientService(gateway, tokenService(), restClientBuilder);
     }
 }
