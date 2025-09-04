@@ -7,7 +7,7 @@ accounts:
   replicaCount: 1
   image:
     repository: accounts 
-    tag: "0.0.1-SNAPSHOT"
+    tag: "latest"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -30,7 +30,7 @@ front:
   replicaCount: 1
   image:
     repository: front 
-    tag: "0.0.1-SNAPSHOT"
+    tag: "latest"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -54,7 +54,7 @@ exchange-generator:
   replicaCount: 1
   image:
     repository: exchange-generator 
-    tag: "0.0.1-SNAPSHOT"
+    tag: "latest"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -75,7 +75,7 @@ exchange:
   replicaCount: 1
   image:
     repository: exchange 
-    tag: "0.0.1-SNAPSHOT"
+    tag: "latest"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -99,7 +99,7 @@ notification:
   replicaCount: 1
   image:
     repository: notification 
-    tag: "0.0.1-SNAPSHOT"
+    tag: "latest"
     pullPolicy: IfNotPresent 
     MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: zipkinUrlGlobal
   service:
