@@ -16,7 +16,7 @@ public class ClientService {
         this.restClient = RestClient.create(gateway);
     }
 
-    public ClientService (String gateway, TokenService tokenService, RestClient.Builder builder) {
+    public ClientService(String gateway, TokenService tokenService, RestClient.Builder builder) {
         this.gateway = gateway;
         this.tokenService = tokenService;
         this.restClient = builder
@@ -35,15 +35,15 @@ public class ClientService {
                 .body(returnType);
     }
 
-    public <T> T post(String resourceAlias, String endpoint, Class<T> type) {
-        log.info("Posting {}", endpoint);
+    public <T> T post(String resourceAlias, String endpoint, Class<T> returnType) {
+        log.info("Post {}", endpoint);
         String accessToken = tokenService.get();
-        endpoint = gateway + resourceAlias + endpoint; //gateway + resourceAlias + endpoint;
+        endpoint = gateway + resourceAlias + endpoint;
         return restClient.post()
                 .uri(endpoint)
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
-                .body(type);
+                .body(returnType);
     }
 
     public <T> T postWithBody(String resourceAlias, String endpoint, Object body, Class<T> returnType) {
