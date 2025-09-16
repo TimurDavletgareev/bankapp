@@ -64,3 +64,15 @@ dependencies:
     version: "77.6.0"
     repository: "https://prometheus-community.github.io/helm-charts"
     alias: prometheus
+
+  - name: elasticsearch
+    version: "7.17.1"
+    repository: "https://helm.elastic.co"
+
+  - name: logstash
+    version: "7.17.1"
+    repository: "https://helm.elastic.co"
+
+  - name: kibana
+    version: "7.17.1"
+    repository: "https://helm.elastic.co"

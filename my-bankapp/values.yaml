@@ -20,6 +20,9 @@ accounts:
         paths:
           - path: /
             pathType: ImplementationSpecific
+  env:
+    - name: KAFKA_SERVER
+      value: "kafka.logging.svc.cluster.local:9092"
   config:
     database_url: "jdbc:postgresql://{{ .Release.Name }}-accounts-db:5432/accountsdb"
     database_username: "accounts_user"
@@ -43,6 +46,9 @@ front:
         paths:
           - path: /
             pathType: ImplementationSpecific
+  env:
+    - name: KAFKA_SERVER
+      value: "kafka.logging.svc.cluster.local:9092"
   config:
     GATEWAY_URL: "http://"
     KEYCLOAK_ISSUER_URI: keycloakGlobal
@@ -67,6 +73,9 @@ exchange-generator:
         paths:
           - path: /
             pathType: ImplementationSpecific
+  env:
+    - name: KAFKA_SERVER
+      value: "kafka.logging.svc.cluster.local:9092"
   config:
     kafka_server: kafkaServerGlobal
     MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: zipkinUrlGlobal
@@ -88,6 +97,9 @@ exchange:
         paths:
           - path: /
             pathType: ImplementationSpecific
+  env:
+    - name: KAFKA_SERVER
+      value: "kafka.logging.svc.cluster.local:9092"
   config:
     database_url: "jdbc:postgresql://{{ .Release.Name }}-exchange-db:5432/exchangedb"
     database_username: "exchange_user"
@@ -113,6 +125,9 @@ notification:
         paths:
           - path: /
             pathType: ImplementationSpecific
+  env:
+    - name: KAFKA_SERVER
+      value: "kafka.logging.svc.cluster.local:9092"
   config:
     kafka_server: kafkaServerGlobal
     MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: zipkinUrlGlobal
@@ -194,3 +209,31 @@ prometheus:
   namespaceOverride: monitoring
   crds:
     create: true
+
+logstash:
+  logstashConfig:
+    logstash.yml: |
+      http.host: "0.0.0.0"
+      xpack.monitoring.elasticsearch.hosts: [ "http://elasticsearch-master:9200" ]
+
+  logstashPipeline:
+    logstash.conf: |
+      input {
+        kafka {
+          bootstrap_servers => "kafka.logging.svc.cluster.local:9092"
+          topics => ["bankapp-logs"]
+          group_id => "bankapp-logstash-consumer"
+          codec => "json"
+        }
+      }
+      filter {
+        json {
+          source => "message"
+        }
+      }
+      output {
+        elasticsearch {
+          hosts => [ "http://elasticsearch-master:9200" ]
+          index => "logs-%{+YYYY.MM.dd}"
+        }
+      }

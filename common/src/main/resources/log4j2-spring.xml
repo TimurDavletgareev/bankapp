@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration packages="org.apache.logging.log4j.core">
+<Configuration status="INFO">
     <Appenders>
-        <Kafka name="KafkaAppender" topic="${spring:application.name}-logs">
-            <Property name="bootstrap.servers">${sys:KAFKA_SERVER:-localhost:9092}</Property>
-            <JsonTemplateLayout eventTemplateUri="classpath:LogstashJsonEventLayoutV1.json"/>
-        </Kafka>
-
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level: %msg%n"/>
         </Console>
+        <Kafka name="Kafka" topic="bankapp-logs">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level: %msg%n"/>
+            <Property name="bootstrap.servers">${sys:KAFKA_SERVER:-localhost:9092}</Property>
+        </Kafka>
     </Appenders>
-
     <Loggers>
         <Root level="info">
+            <AppenderRef ref="Kafka"/>
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="KafkaAppender"/>
         </Root>
+        <Logger name="org.apache.kafka" level="INFO" >
+            <AppenderRef ref="Console"/>
+        </Logger>
     </Loggers>
 </Configuration>
