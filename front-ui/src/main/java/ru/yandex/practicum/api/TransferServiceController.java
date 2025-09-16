@@ -1,5 +1,6 @@
 package ru.yandex.practicum.api;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import java.security.Principal;
 public class TransferServiceController {
 
     private final TransferClient transferClient;
+    private final MeterRegistry meterRegistry;
 
     @PostMapping("/user/{login}/transfer")
     public String transfer(@PathVariable String login,
@@ -30,14 +32,19 @@ public class TransferServiceController {
         if (value <= 0) {
             throw new IncorrectRequestException("Value must be greater than zero");
         }
-        transferClient.transfer(TransferDto.builder()
-                .login(login)
-                .fromCurrency(from_currency)
-                .toCurrency(to_currency)
-                .fromValue(value)
-                .toLogin(to_login)
-                .build()
-        );
+        try {
+            transferClient.transfer(TransferDto.builder()
+                    .login(login)
+                    .fromCurrency(from_currency)
+                    .toCurrency(to_currency)
+                    .fromValue(value)
+                    .toLogin(to_login)
+                    .build()
+            );
+        } catch (Exception e) {
+            meterRegistry.counter("transfer_failed", "from_login", login).increment();
+            throw new RuntimeException(e);
+        }
         return "redirect:/main";
     }
 }

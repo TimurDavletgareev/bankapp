@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: high-login-faults
+  namespace: monitoring
+  labels:
+    release: prometheus-stack
+spec:
+  groups:
+    - name: account.rules
+      rules:
+        - alert: HighLoginFaults
+          expr: sum(rate(wrong_login_total[30s])) > 10
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "Увеличилось количество неуспешных логинов"
+            description: "Количество неуспешных логинов увеличилось до 10 в течение последних 30 секунд."
