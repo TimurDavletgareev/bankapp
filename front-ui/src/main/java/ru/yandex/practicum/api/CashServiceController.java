@@ -42,7 +42,7 @@ public class CashServiceController {
             );
         } catch (Exception e) {
             meterRegistry.counter("cash_failed", "login", login).increment();
-            throw new RuntimeException(e);
+            throw e;
         }
         return "redirect:/main";
     }

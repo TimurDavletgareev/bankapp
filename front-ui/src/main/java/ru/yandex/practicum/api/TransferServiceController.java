@@ -43,7 +43,7 @@ public class TransferServiceController {
             );
         } catch (Exception e) {
             meterRegistry.counter("transfer_failed", "from_login", login).increment();
-            throw new RuntimeException(e);
+            throw e;
         }
         return "redirect:/main";
     }

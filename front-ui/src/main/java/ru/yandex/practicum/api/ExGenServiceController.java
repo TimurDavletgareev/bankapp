@@ -24,7 +24,7 @@ public class ExGenServiceController {
             return exchangeGeneratorConsumer.getRates();
         } catch (Exception e) {
             meterRegistry.counter("get_rates_failed").increment();
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 }
