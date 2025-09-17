@@ -1,49 +1,43 @@
-# Configuration for the accounts subchart
-# NOTE: For local development (Minikube/Kind/Docker Desktop), build the image locally
-# (e.g., `docker build -t accounts:latest in accounts dir)
-# and ensure your K8s cluster can access local images (e.g., `minikube docker-env` or `kind load docker-image ...`).
+global:
+  zipkinUrlGlobal: "http://my-bankapp-zipkin:9411"
+  keycloakGlobal: "http://my-bankapp-keycloak:8085/realms/master"
+  kafkaServerGlobal: "http://my-bankapp-kafka:9092"
+
 accounts:
   replicaCount: 1
   image:
-    # --- REVERTED TO LOCAL REPO ---
-    repository: accounts # Removed registry prefix
-    tag: "0.0.1-SNAPSHOT"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
-    # -----------------------------
+    repository: accounts 
+    tag: "latest"
+    pullPolicy: IfNotPresent
   service:
     type: ClusterIP
     port: 8010
   ingress:
     enabled: true
-    className: "nginx" # Specify your ingress controller class
+    className: "nginx" 
     hosts:
-      - host: accounts # Use global domain or specific
+      - host: accounts 
         paths:
           - path: /
             pathType: ImplementationSpecific
-  # Database connection details passed to accounts configmap
+  env:
+    - name: KAFKA_SERVER
+      value: "kafka.logging.svc.cluster.local:9092"
   config:
-    # --- CORRECTED DB URL --- Using '<ReleaseName>-<Alias>' service name convention
     database_url: "jdbc:postgresql://{{ .Release.Name }}-accounts-db:5432/accountsdb"
-    # Secret reference for password is more secure
     database_username: "accounts_user"
-    # database_password_secret: "{{ .Release.Name }}-accounts-db-postgresql" # Reference to secret created by DB chart
-    # database_password_secret_key: "postgresql-password" # Key within the secret
     jwt_issuer_uri: "http://my-bankapp-keycloak:8085/realms/master"
+    MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: zipkinUrlGlobal
 
-# Configuration for the front subchart
-# NOTE: Build image locally: `docker build -t front:latest in front dir
 front:
   replicaCount: 1
   image:
-    # --- REVERTED TO LOCAL REPO ---
-    repository: front # Removed registry prefix
-    tag: "0.0.1-SNAPSHOT"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
-    # -----------------------------
+    repository: front 
+    tag: "latest"
+    pullPolicy: IfNotPresent
   service:
     type: ClusterIP
-    port: 8080 # Different port for front service
+    port: 8080 
   ingress:
     enabled: true
     className: "nginx"
@@ -52,25 +46,25 @@ front:
         paths:
           - path: /
             pathType: ImplementationSpecific
+  env:
+    - name: KAFKA_SERVER
+      value: "kafka.logging.svc.cluster.local:9092"
   config:
     GATEWAY_URL: "http://"
-    KEYCLOAK_ISSUER_URI: "http://my-bankapp-keycloak:8085/realms/master"
+    KEYCLOAK_ISSUER_URI: keycloakGlobal
     KEYCLOAK_CLIENT_SECRET: "d3qytkUb62j7F85l85YZ9c96exiPljQr"
-    KAFKA_SERVER: "http://my-bankapp-kafka:9092"
+    KAFKA_SERVER: kafkaServerGlobal
+    MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: zipkinUrlGlobal
 
-# Configuration for the front subchart
-# NOTE: Build image locally: `docker build -t front:latest in front dir
 exchange-generator:
   replicaCount: 1
   image:
-    # --- REVERTED TO LOCAL REPO ---
-    repository: exchange-generator # Removed registry prefix
-    tag: "0.0.1-SNAPSHOT"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
-    # -----------------------------
+    repository: exchange-generator 
+    tag: "latest"
+    pullPolicy: IfNotPresent
   service:
     type: ClusterIP
-    port: 8020 # Different port for front service
+    port: 8020 
   ingress:
     enabled: true
     className: "nginx"
@@ -79,50 +73,50 @@ exchange-generator:
         paths:
           - path: /
             pathType: ImplementationSpecific
+  env:
+    - name: KAFKA_SERVER
+      value: "kafka.logging.svc.cluster.local:9092"
   config:
-    kafka_server: "http://my-bankapp-kafka:9092"
+    kafka_server: kafkaServerGlobal
+    MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: zipkinUrlGlobal
 
 exchange:
   replicaCount: 1
   image:
-    # --- REVERTED TO LOCAL REPO ---
-    repository: exchange # Removed registry prefix
-    tag: "0.0.1-SNAPSHOT"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
-    # -----------------------------
+    repository: exchange 
+    tag: "latest"
+    pullPolicy: IfNotPresent
   service:
     type: ClusterIP
     port: 8030
   ingress:
     enabled: true
-    className: "nginx" # Specify your ingress controller class
+    className: "nginx" 
     hosts:
-      - host: exchange # Use global domain or specific
+      - host: exchange 
         paths:
           - path: /
             pathType: ImplementationSpecific
-  # Database connection details passed to exchange configmap
+  env:
+    - name: KAFKA_SERVER
+      value: "kafka.logging.svc.cluster.local:9092"
   config:
-    # --- CORRECTED DB URL --- Using '<ReleaseName>-<Alias>' service name convention
     database_url: "jdbc:postgresql://{{ .Release.Name }}-exchange-db:5432/exchangedb"
-    # Secret reference for password is more secure
     database_username: "exchange_user"
-    # database_password_secret: "{{ .Release.Name }}-exchange-db-postgresql" # Reference to secret created by DB chart
-    # database_password_secret_key: "postgresql-password" # Key within the secret
-    jwt_issuer_uri: "http://my-bankapp-kafka:8085/realms/master"
-    kafka_server: "http://my-bankapp-kafka:9092"
+    jwt_issuer_uri: keycloakGlobal
+    kafka_server: kafkaServerGlobal
+    MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: zipkinUrlGlobal
 
 notification:
   replicaCount: 1
   image:
-    # --- REVERTED TO LOCAL REPO ---
-    repository: notification # Removed registry prefix
-    tag: "0.0.1-SNAPSHOT"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
-    # -----------------------------
+    repository: notification 
+    tag: "latest"
+    pullPolicy: IfNotPresent 
+    MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: zipkinUrlGlobal
   service:
     type: ClusterIP
-    port: 8060 # Different port for front service
+    port: 8060 
   ingress:
     enabled: true
     className: "nginx"
@@ -131,39 +125,35 @@ notification:
         paths:
           - path: /
             pathType: ImplementationSpecific
+  env:
+    - name: KAFKA_SERVER
+      value: "kafka.logging.svc.cluster.local:9092"
   config:
-    kafka_server: "http://my-bankapp-kafka:9092"
+    kafka_server: kafkaServerGlobal
+    MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: zipkinUrlGlobal
 
-# Configuration for the accounts-db (PostgreSQL dependency)
-# Values here are prefixed according to the Bitnami PostgreSQL chart's structure
-# Check the Bitnami chart's values.yaml for all available options
 accounts-db:
   enabled: true
-  # Override values from the official postgresql chart
   auth:
     database: accountsdb
     username: accounts_user
-    # Use existingSecret or provide password (less secure for production)
-    # existingSecret: "{{ .Release.Name }}-accounts-db-postgresql" # Name of the secret to use/create
-    password: "changeM3accounts!" # Example: Not recommended for production
+    password: "changeM3accounts!" 
   primary:
     persistence:
       enabled: true
-      size: 1Gi # Small size for example
+      size: 1Gi 
 
 exchange-db:
   enabled: true
-  # Override values from the official postgresql chart
+  
   auth:
     database: exchangedb
     username: exchange_user
-    # Use existingSecret or provide password (less secure for production)
-    # existingSecret: "{{ .Release.Name }}-exchange-db-postgresql" # Name of the secret to use/create
-    password: "changeM3exchange!" # Example: Not recommended for production
+    password: "changeM3exchange!" 
   primary:
     persistence:
       enabled: true
-      size: 1Gi # Small size for example
+      size: 1Gi 
 
 keycloak:
   auth:
@@ -205,3 +195,45 @@ kafka:
   zookeeper:
     enabled: true
     replicaCount: 1
+
+zipkin:
+  enabled: true
+  service:
+    type: ClusterIP
+    port: 9411
+  storage:
+    type: mem
+  replicaCount: 1
+
+prometheus:
+  namespaceOverride: monitoring
+  crds:
+    create: true
+
+logstash:
+  logstashConfig:
+    logstash.yml: |
+      http.host: "0.0.0.0"
+      xpack.monitoring.elasticsearch.hosts: [ "http://elasticsearch-master:9200" ]
+
+  logstashPipeline:
+    logstash.conf: |
+      input {
+        kafka {
+          bootstrap_servers => "kafka.logging.svc.cluster.local:9092"
+          topics => ["bankapp-logs"]
+          group_id => "bankapp-logstash-consumer"
+          codec => "json"
+        }
+      }
+      filter {
+        json {
+          source => "message"
+        }
+      }
+      output {
+        elasticsearch {
+          hosts => [ "http://elasticsearch-master:9200" ]
+          index => "logs-%{+YYYY.MM.dd}"
+        }
+      }

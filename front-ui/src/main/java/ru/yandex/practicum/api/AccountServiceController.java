@@ -1,5 +1,6 @@
 package ru.yandex.practicum.api;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +28,7 @@ public class AccountServiceController {
     private final AccountClient accountClient;
     private final PasswordEncoder passwordEncoder;
     private final NotificationProducer notificationProducer;
+    private final MeterRegistry meterRegistry;
 
     @GetMapping("/signup")
     public String getSignUp() {
@@ -91,6 +93,7 @@ public class AccountServiceController {
                              Principal principal) {
         if (!login.equals(principal.getName())) {
             notifyWrongLogin(principal.getName());
+            wrongLoginMeter(login);
         }
         if (!accountClient.updateUser(login, name, birthdate)) {
             notifyError(principal.getName(), "User update failed");
@@ -104,20 +107,25 @@ public class AccountServiceController {
     private void notifyWrongLogin(String email) {
         String subject = "Not current user login";
         String message = "Login and principal email do not match";
-        notificationProducer.notify(new NotificationDto(email,  subject, message));
+        notificationProducer.notify(new NotificationDto(email, subject, message));
         throw new IncorrectRequestException(subject);
     }
 
     private void notifyWrongPassword(String email) {
         String subject = "Wrong password confirmation";
         String message = "Passwords do not match";
-        notificationProducer.notify(new NotificationDto(email,  subject, message));
+        notificationProducer.notify(new NotificationDto(email, subject, message));
         throw new IncorrectRequestException(subject);
     }
 
     private void notifyError(String email, String subject) {
         String message = "Something went wrong";
-        notificationProducer.notify(new NotificationDto(email,  subject, message));
+        notificationProducer.notify(new NotificationDto(email, subject, message));
         throw new IncorrectRequestException(subject);
+    }
+
+    private void wrongLoginMeter(String login) {
+        meterRegistry.counter("wrong_login_total").increment();
+        meterRegistry.counter("wrong_login", "login", login).increment();
     }
 }

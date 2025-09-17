@@ -1,24 +1,27 @@
 package ru.yandex.practicum.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.web.client.RestClient;
 import ru.yandex.practicum.service.ClientService;
 import ru.yandex.practicum.service.TokenService;
 
 @Configuration
+@RequiredArgsConstructor
 public class ClientConfiguration {
 
     @Value("${spring.security.oauth2.client.registration.bankapp-front.client-id}")
     private String client_id;
 
-    @Autowired
-    private OAuth2AuthorizedClientManager authorizedClientManager;
-
     @Value("${gateway}")
     private String gateway;
+
+    private final OAuth2AuthorizedClientManager authorizedClientManager;
+
+    private final RestClient.Builder restClientBuilder;
 
     @Bean
     TokenService tokenService() {
@@ -27,6 +30,6 @@ public class ClientConfiguration {
 
     @Bean
     ClientService clientService() {
-        return new ClientService(gateway, tokenService());
+        return new ClientService(gateway, tokenService(), restClientBuilder);
     }
 }

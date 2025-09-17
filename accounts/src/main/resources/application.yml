@@ -32,3 +32,12 @@ management:
     health:
       probes:
         enabled: true
+  zipkin:
+    tracing:
+      endpoint: ${MANAGEMENT_ZIPKIN_TRACING_ENDPOINT} # Эндпойнт Zipkin для приема спанов
+  tracing:
+    sampling:
+      probability: 1 # Сэмплируем все запросы
+
+logging:
+  config: classpath:log4j2-spring.xml

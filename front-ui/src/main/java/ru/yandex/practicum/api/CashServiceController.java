@@ -1,5 +1,6 @@
 package ru.yandex.practicum.api;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import java.security.Principal;
 public class CashServiceController {
 
     private final CashClient cashClient;
+    private final MeterRegistry meterRegistry;
 
     @PostMapping("/user/{login}/cash")
     public String cash(@PathVariable String login,
@@ -30,13 +32,18 @@ public class CashServiceController {
         if (value <= 0) {
             throw new IncorrectRequestException("Value must be greater than zero");
         }
-        cashClient.cash(CashDto.builder()
-                .login(login)
-                .currency(currency)
-                .value(value)
-                .action(CashOperation.valueOf(action))
-                .build()
-        );
+        try {
+            cashClient.cash(CashDto.builder()
+                    .login(login)
+                    .currency(currency)
+                    .value(value)
+                    .action(CashOperation.valueOf(action))
+                    .build()
+            );
+        } catch (Exception e) {
+            meterRegistry.counter("cash_failed", "login", login).increment();
+            throw e;
+        }
         return "redirect:/main";
     }
 }

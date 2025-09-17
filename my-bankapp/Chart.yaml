@@ -8,48 +8,71 @@ appVersion: "1.0.0"
 dependencies:
   # Subchart for accounts Service
   - name: accounts
-    version: "0.1.0"
+    version: 0.1.0
     repository: "file://./charts/accounts" # Local path reference
 
   # Subchart for front Service
   - name: front
-    version: "0.1.0"
+    version: 0.1.0
     repository: "file://./charts/front"  # Local path reference
 
   # Subchart for front Service
   - name: exchange-generator
-    version: "0.1.0"
+    version: 0.1.0
     repository: "file://./charts/exchange-generator"  # Local path reference
 
   # Subchart for accounts Service
   - name: exchange
-    version: "0.1.0"
+    version: 0.1.0
     repository: "file://./charts/exchange" # Local path reference
 
   # Subchart for accounts Service
   - name: notification
-    version: "0.1.0"
+    version: 0.1.0
     repository: "file://./charts/notification" # Local path reference
 
  # Dependency for accounts DB (e.g., PostgreSQL)
   - name: postgresql
-    version: "14.2.3" # Using a specific known stable version from Bitnami history
+    version: 14.2.3 # Using a specific known stable version from Bitnami history
     repository: "https://charts.bitnami.com/bitnami"
     alias: accounts-db # Alias to distinguish this instance
     condition: accounts-db.enabled # Allow disabling if needed
 
   # Dependency for exchange DB (e.g., PostgreSQL)
   - name: postgresql
-    version: "14.2.3" # Using a specific known stable version from Bitnami history
+    version: 14.2.3 # Using a specific known stable version from Bitnami history
     repository: "https://charts.bitnami.com/bitnami"
     alias: exchange-db # Alias to distinguish this instance
     condition: exchange-db.enabled # Allow disabling if needed
 
   - name: keycloak
     version: 21.5.0
-    repository: https://charts.bitnami.com/bitnami
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: keycloak.enabled
 
   - name: kafka
-    version: 29.4.5
+    version: 32.4.3
+    repository: "https://charts.bitnami.com/bitnami"
     condition: kafka.enabled
-    repository: https://charts.bitnami.com/bitnami
+
+  - name: zipkin
+    version: 1.3.11
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: zipkin.enabled
+
+  - name: kube-prometheus-stack
+    version: "77.6.0"
+    repository: "https://prometheus-community.github.io/helm-charts"
+    alias: prometheus
+
+  - name: elasticsearch
+    version: "7.17.1"
+    repository: "https://helm.elastic.co"
+
+  - name: logstash
+    version: "7.17.1"
+    repository: "https://helm.elastic.co"
+
+  - name: kibana
+    version: "7.17.1"
+    repository: "https://helm.elastic.co"
