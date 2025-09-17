@@ -5,7 +5,7 @@
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level: %msg%n"/>
         </Console>
         <Kafka name="Kafka" topic="bankapp-logs">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level: %msg%n"/>
+            <JsonTemplateLayout eventTemplateUri="classpath:LogstashJsonEventLayoutV1.json"/>
             <Property name="bootstrap.servers">${sys:KAFKA_SERVER:-localhost:9092}</Property>
         </Kafka>
     </Appenders>
